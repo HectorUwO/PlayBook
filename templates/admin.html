@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración | Biblioteca</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+</head>
+<body class="grid">
+    <div class="grid__item header">
+        <div class="navbar__brand">
+            <div class="brand"><a href="{{url_for('index')}}">PLAYBOOKS</a></div>
+        </div>
+        <div class="navbar__search">
+        </div>
+        <nav class="navbar__nav">
+            <ul class="nav">
+                <li class="navbar__item" id="adminSection" style="display: none;">
+                </li>
+                <li class="navbar__item" id="userSection" style="display: none;">
+                    <a href="{{url_for('user')}}" class="navbar__link has-icon">
+                        <span class="material-symbols-outlined">person</span>
+                        Mi cuenta
+                    </a>
+                </li>
+                <li class="navbar__item" id="closeSession" style="display: none;">
+                    <a href="logout" class="navbar__link has-icon">
+                        <span class="material-symbols-outlined">logout</span>
+                        Cerrar Sesion
+                    </a>
+                </li>
+                <li class="navbar__item" id="loginSection" style="display: none;">
+                    <a href="login" class="navbar__link has-icon">
+                        <span class="material-symbols-outlined">login</span>
+                        Iniciar Sesion
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="form-container">
+        <ul class="tabs" style="margin-top: 20px;">
+            <li class="tabs__item">
+                <a href="#agregar" class="tabs__link tabs__link--isActive">Agregar</a>
+            </li>
+            <li class="tabs__item">
+                <a href="#gestionar" class="tabs__link">Gestionar</a>
+            </li>
+            <li class="tabs__item">
+                <a href="#prestamos" class="tabs__link">Prestamos</a>
+            </li>
+            <li class="tabs__item">
+                <a href="#devoluciones" class="tabs__link">Devoluciones</a>
+            </li>
+            <li class="tabs__item">
+                <a href="#usuarios" class="tabs__link">Usuarios</a>
+            </li>
+            <li class="tabs__item">
+                <a href="#estadisticas" class="tabs__link">Estadísticas</a>
+            </li>
+            <li class="tabs__item">
+                <a href="#solicitudes" class="tabs__link">Solicitudes</a>
+            </li>
+        </ul>
+
+        <!-- Panel Agregar -->
+        <div id="agregar" class="tab-content active">
+            <h2 class="title">Agregar nuevo libro</h2>
+            <form class="form" id="formLibro">
+                <div class="form__control">
+                    <label class="label" for="">Título</label>
+                    <input class="input" type="text" id="titulo" placeholder="Título del libro" required>
+                </div>
+                <div class="form__control">
+                    <label class="label" for="">Autor</label>
+                    <input class="input" type="text" id="autor" placeholder="Ingresa el autor del libro" required>
+                </div>
+                <div class="form__control">
+                    <label class="label" for="">Publicación</label>
+                    <input class="input" type="number" id="anio" placeholder="Ingresa el año de publicación" required>
+                </div>
+                <div class="form__control">
+                    <label class="label" for="">ISNB</label>
+                    <input class="input" type="text" id="isbn" placeholder="ISBN" required>
+                </div>
+                <div class="form__control">
+                    <label class="label" for="">Categoría</label>
+                    <select id="categoria" required>
+                        <option value="">Seleccione una categoría</option>
+                        <option value="Literatura y novelas">Literatura y novelas</option>
+                        <option value="Niños">Niños</option>
+                        <option value="Arte">Arte</option>
+                        <option value="Gastronomia">Gastronomía</option>
+                        <option value="Programación">Programación</option>
+                        <option value="Comics">Comics</option>
+                    </select>
+                </div>
+                <div class="form__control">
+                    <label class="label" for="descripcion">Descripción</label>
+                    <textarea id="descripcion" placeholder="Descripción del libro" required rows="4"></textarea>
+                </div>
+                <div class="form__control">
+                    <label class="label" for="stock">Stock</label>
+                    <input class="input" type="number" id="stock" placeholder="Cantidad de ejemplares" required min="0">
+                </div>
+                <button type="submit" class="btn btn--primary">Publicar ahora</button>
+                
+            </form>
+        </div>
+
+        <!-- Panel Gestionar -->
+        <div id="gestionar" class="tab-content">
+            <h2 class="title">Gestionar libros</h2>
+            <div class="search-section">
+                <label class="label">Buscar libro</label>
+                <input type="text" class="input" id="searchGestionar" placeholder="Buscar por título o autor...">
+                <div id="resultadosGestionar" class="search-results"></div>
+            </div>
+
+            <form class="form" id="formGestionar">
+                <input type="hidden" id="libroId">
+                <div class="form__control">
+                    <label class="label" for="tituloGestionar">Título</label>
+                    <input class="input" type="text" id="tituloGestionar" placeholder="Título del libro" required>
+                </div>
+                <div class="form__control">
+                    <label class="label" for="autorGestionar">Autor</label>
+                    <input class="input" type="text" id="autorGestionar" placeholder="Autor del libro" required>
+                </div>
+                <div class="form__control">
+                    <label class="label" for="anioGestionar">Publicación</label>
+                    <input class="input" type="number" id="anioGestionar" placeholder="Año de publicación" required>
+                </div>
+                <div class="form__control">
+                    <label class="label" for="isbnGestionar">ISBN</label>
+                    <input class="input" type="text" id="isbnGestionar" placeholder="ISBN" required>
+                </div>
+                <div class="form__control">
+                    <label class="label" for="categoriaGestionar">Categoría</label>
+                    <select id="categoriaGestionar" required>
+                        <option value="">Seleccione una categoría</option>
+                        <option value="Literatura y novelas">Literatura y novelas</option>
+                        <option value="Niños">Niños</option>
+                        <option value="Arte">Arte</option>
+                        <option value="Gastronomia">Gastronomía</option>
+                        <option value="Programación">Programación</option>
+                        <option value="Comics">Comics</option>
+                    </select>
+                </div>
+                <div class="form__control">
+                    <label class="label" for="descripcionGestionar">Descripción</label>
+                    <textarea id="descripcionGestionar" placeholder="Descripción del libro" required rows="4"></textarea>
+                </div>
+                <div class="form__control">
+                    <label class="label" for="stockGestionar">Stock</label>
+                    <input class="input" type="number" id="stockGestionar" placeholder="Cantidad de ejemplares" required min="0">
+                </div>
+                <div class="form__control">
+                    <label class="label" for="estadoGestionar">Estado</label>
+                    <select id="estadoGestionar" required>
+                        <option value="disponible">Disponible</option>
+                        <option value="agotado">Agotado</option>
+                        <option value="mantenimiento">Mantenimiento</option>
+                    </select>
+                </div>
+                <div class="button-group">
+                    <button type="submit" class="btn btn--primary">Actualizar</button>
+                    <button type="button" class="btn btn--danger" id="btnEliminar">Eliminar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Panel Préstamos -->
+        <div id="prestamos" class="tab-content">
+            <h2 class="title">Gestionar préstamos</h2>
+            
+            <!-- Búsqueda de libros -->
+            <div class="search-section">
+                <label class="label">Buscar libro disponible</label>
+                <input type="text" class="input" id="searchPrestamo" placeholder="Buscar por título o autor...">
+                <div id="resultadosPrestamo" class="search-results"></div>
+            </div>
+
+            <!-- Nueva sección de búsqueda de usuarios -->
+            <div class="search-section">
+                <label class="label">Buscar usuario</label>
+                <input type="text" class="input" id="searchUsuarioPrestamo" placeholder="Buscar por nombre o email...">
+                <div id="resultadosUsuarioPrestamo" class="search-results"></div>
+            </div>
+
+            <form class="form" id="formPrestamo">
+                <div class="form__control">
+                    <label class="label" for="idLibro">ID del libro</label>
+                    <input class="input" type="number" id="idLibro" placeholder="ID del libro" required>
+                </div>
+                <div class="form__control">
+                    <label class="label" for="idUsuario">ID del usuario</label>
+                    <input class="input" type="number" id="idUsuario" placeholder="ID del usuario" required>
+                </div>
+                <button type="submit" class="btn btn--primary">Prestar libro</button>
+            </form>
+        </div>
+
+        <!-- Panel Devoluciones -->
+        <div id="devoluciones" class="tab-content">
+            <h2 class="title">Gestionar devoluciones</h2>
+            
+            <!-- Barra de búsqueda y formulario existentes -->
+            <div class="search-section">
+                <input type="text" class="input" id="searchDevolucion" placeholder="Buscar libro prestado...">
+                <div id="resultadosDevolucion" class="search-results"></div>
+            </div>
+
+            <form class="form" id="formDevolucion">
+                <div class="form__control">
+                    <label class="label" for="idLibroDev">ID del libro</label>
+                    <input class="input" type="number" id="idLibroDev" placeholder="ID del libro" required >
+                </div>
+                <div class="form__control">
+                    <label class="label" for="idUsuarioDev">ID del usuario</label>
+                    <input class="input" type="number" id="idUsuarioDev" placeholder="ID del usuario" required >
+                </div>
+                <button type="submit" class="btn btn--primary">Devolver libro</button>
+            </form>
+
+            <div class="prestamos-activos">
+                <h3>Libros prestados actualmente</h3>
+                <div class="tabla-prestamos">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Libro</th>
+                                <th>Usuario</th>
+                                <th>Fecha préstamo</th>
+                                <th>ID Libro</th>
+                                <th>ID Usuario</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaPrestamos">
+                            <!-- Se llenará dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Panel Usuarios -->
+        <div id="usuarios" class="tab-content">
+            <h2 class="title">Gestionar usuarios</h2>
+            <form class="form" id="formUsuario">
+                <div class="form__control">
+                    <label class="label" for="nombre">Nombre</label>
+                    <input class="input" type="text" id="nombre" placeholder="Nombre completo" required>
+                </div>
+                <div class="form__control">
+                    <label class="label" for="email">Correo electrónico</label>
+                    <input class="input" type="email" id="email" placeholder="Correo electrónico" required>
+                </div>
+                <div class="form__control">
+                    <label class="label" for="privilegios">Permisos</label>
+                    <select id="privilegios" required>
+                        <option value="usuario">Usuario</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn--primary">Registrar usuario</button>
+            </form>
+        </div>
+
+        <!-- Panel Solicitudes -->
+        <div id="solicitudes" class="tab-content">
+            <h2 class="title">Gestionar Solicitudes</h2>
+            <div class="form">
+                <div class="form__control">
+                    <div class="tabla-prestamos">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Usuario</th>
+                                    <th>Libro</th>
+                                    <th>Fecha solicitud</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="solicitudesPendientes">
+                                <!-- Se llenará dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Estadísticas -->
+        <div id="estadisticas" class="tab-content">
+            <h2 class="title">Estadísticas de la Biblioteca</h2>
+            <div class="form">
+                <div class="form__control">
+                    <div class="stats-grid">
+                        <div class="stat-section">
+                            <h3>Libros y Stock</h3>
+                            <div class="stat-cards">
+                                <div class="stat-card">
+                                    <h4>Total Títulos</h4>
+                                    <p id="totalTitulos">0</p>
+                                </div>
+                                <div class="stat-card">
+                                    <h4>Total Ejemplares</h4>
+                                    <p id="totalEjemplares">0</p>
+                                </div>
+                                <div class="stat-card">
+                                    <h4>Ejemplares Disponibles</h4>
+                                    <p id="ejemplaresDisponibles">0</p>
+                                </div>
+                                <div class="stat-card">
+                                    <h4>Libros Agotados</h4>
+                                    <p id="librosAgotados">0</p>
+                                </div>
+                                <div class="stat-card">
+                                    <h4>Libros Con Stock</h4>
+                                    <p id="librosConStock">0</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-section">
+                            <h3>Actividad</h3>
+                            <div class="stat-cards">
+                                <div class="stat-card">
+                                    <h4>Solicitudes Pendientes</h4>
+                                    <p id="solicitudesPendientesCount">0</p>
+                                </div>
+                                <div class="stat-card">
+                                    <h4>Préstamos Activos</h4>
+                                    <p id="prestamosActivosCount">0</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stat-section">
+                            <h3>Usuarios</h3>
+                            <div class="stat-cards">
+                                <div class="stat-card">
+                                    <h4>Total Usuarios</h4>
+                                    <p id="totalUsuariosCount">0</p>
+                                </div>
+                                <div class="stat-card">
+                                    <h4>Con Préstamos</h4>
+                                    <p id="usuariosConPrestamosCount">0</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+</html>

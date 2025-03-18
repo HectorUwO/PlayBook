@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Página no encontrada</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="grid">
+        <header class="header">
+            <div class="brand">
+                <a href="/">PlayBook</a>
+            </div>
+        </header>
+        <main class="main">
+            <div style="text-align: center; padding: 50px;">
+                <h1 class="subtitle">Error 404 - Página no encontrada</h1>
+                <p style="margin: 20px 0;">Lo sentimos, la página que estás buscando no existe.</p>
+                <div class="container__actions">
+                    <a href="/" class="btn btn--primary">Volver al inicio</a>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
