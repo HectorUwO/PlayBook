@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ libro.titulo }} | Playbooks</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+</head>
+<body class="grid">
+    <div class="grid__item header">
+        <div class="navbar__brand">
+          <div class="brand"><a href="{{url_for('index')}}">PLAYBOOKS</a></div>
+        </div>
+        <div class="navbar__search">
+            <input type="text" class="input input--search" placeholder="Busca un libro de tu interés">
+            <span class="material-symbols-outlined has-icon-search">search</span>
+            <div class="search__container"></div>
+        </div>
+        <nav class="navbar__nav">
+          <ul class="nav">
+            <li class="navbar__item" id="adminSection" style="display: none;">
+            <a href="{{url_for('admin')}}" class="navbar__link has-icon">
+              <span class="material-symbols-outlined">shield_person</span>
+              Administrador
+            </a>
+          </li>
+          <li class="navbar__item" id="userSection" style="display: none;">
+            <a href="{{url_for('user')}}" class="navbar__link has-icon">
+              <span class="material-symbols-outlined">person</span>
+              Mi cuenta
+            </a>
+          </li>
+          <li class="navbar__item" id="closeSession" style="display: none;">
+            <a href="{{url_for('logout')}}" class="navbar__link has-icon">
+              <span class="material-symbols-outlined">logout</span>
+              Cerrar Sesion
+            </a>
+          </li>
+          <li class="navbar__item" id="loginSection" style="display: none;">
+            <a href="{{url_for('login')}}" class="navbar__link has-icon">
+              <span class="material-symbols-outlined">login</span>
+              Iniciar Sesion
+            </a>
+          </li>
+          </ul>
+        </nav>
+    </div>
+    
+    <section class="product">
+        <div class="product__images">
+            <img src="{{ url_for('static', filename='covers/default-cover.png') }}" alt="" class="images--img">
+        </div>
+        <div class="product__details" style="visibility: hidden;">
+            <h1 class="title"></h1>
+            <div class="autor"></div>
+            <p class="descripcion"></p>
+            <hr>
+            <div class="details"></div>
+            <div class="categoria"></div>
+            <div class="estado estado-details" id="Estado"></div>
+            <br>
+            <div class="stock-info has-icon">
+                <span class="material-symbols-outlined">inventory_2</span>
+                <span id="stockDisplay">Ejemplares disponibles: </span>
+            </div>
+            <br>
+            <p class="has-icon tipolibro">
+                <span class="material-symbols-outlined">menu_book</span>
+                <span> Versión Fisica - Recogelo en la biblioteca </span>
+            </p>
+            <div class="details__actions">
+                <a href="#" class="btn btn--secondary" id="btnPedir" style="display: none;">Solicitar este libro</a>
+            </div>
+            <div id="mensajeEstado" class="mensaje-estado" style="display: none;"></div>
+        </div>
+    </section>
+
+    <p class="item" style="margin-top: 50px;">También te pueden interesar</p>
+    <div class="container">
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/libro.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Biblioteca - Panel de Usuario</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+</head>
+<body class="grid">
+    <div class="grid__item header">
+        <div class="navbar__brand">
+          <div class="brand"><a href="{{url_for('index')}}">PLAYBOOKS</a></div>
+        </div>
+        <div class="navbar__search">
+          <input type="text" class="input input--search" placeholder="Busca un libro de tu interés">
+          <span class="material-symbols-outlined has-icon-search">search</span>
+          <div class="search__container"></div>
+        </div>
+        <nav class="navbar__nav">
+          <ul class="nav">
+            <li class="navbar__item" id="adminSection" style="display: none;">
+              <a href="{{url_for('admin')}}" class="navbar__link has-icon">
+                <span class="material-symbols-outlined">shield_person</span>
+                Administrador
+              </a>
+            </li>
+            <li class="navbar__item" id="userSection" style="display: none;">
+              <a href="{{url_for('user')}}" class="navbar__link has-icon">
+                <span class="material-symbols-outlined">person</span>
+                Mi cuenta
+              </a>
+            </li>
+            <li class="navbar__item" id="closeSession" style="display: none;">
+              <a href="logout" class="navbar__link has-icon">
+                <span class="material-symbols-outlined">logout</span>
+                Cerrar Sesion
+              </a>
+            </li>
+            <li class="navbar__item" id="loginSection" style="display: none;">
+              <a href="login" class="navbar__link has-icon">
+                <span class="material-symbols-outlined">login</span>
+                Iniciar Sesion
+              </a>
+            </li>
+          </ul>
+        </nav>
+    </div>
+
+    <main class="user-dashboard">
+        <section class="stats-details">
+            <h2>Mis Solicitudes Pendientes</h2>
+            <div id="misSolicitudes" class="stats-table">
+                <p>Cargando solicitudes...</p>
+            </div>
+        </section>
+
+        <section class="stats-details">
+            <h2>Mis Libros Prestados</h2>
+            <div id="misLibros" class="stats-table">
+                <p>Cargando préstamos...</p>
+            </div>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/user.js') }}"></script>
+</body>
+</html>

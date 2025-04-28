@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>401 - Acceso Denegado | PlayBook</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .error-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 70vh;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .error-code {
+            font-size: 8rem;
+            font-weight: 700;
+            color: #e74c3c;
+            margin: 0;
+            line-height: 1;
+            opacity: 0.8;
+        }
+        
+        .error-title {
+            font-size: 2rem;
+            margin: 1rem 0;
+            color: #2c3e50;
+        }
+        
+        .error-message {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            max-width: 500px;
+            margin: 1.5rem auto;
+        }
+        
+        .error-illustration {
+            width: 300px;
+            height: 300px;
+            margin-bottom: 2rem;
+            animation: shake 10s ease-in-out infinite;
+            animation-delay: 2s;
+        }
+        
+        .btn--primary {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+        }
+        
+        .btn--primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        .grid-401 {
+            width: 90%;
+            max-width: 1440px;
+            margin: 20px auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: auto auto 1fr;
+            gap: 0px;
+        }
+
+        .main-401 {
+            margin-top: 0px;
+        }
+        
+        @keyframes shake {
+            0%, 90%, 100% { transform: translateX(0); }
+            92% { transform: translateX(-5px); }
+            94% { transform: translateX(5px); }
+            96% { transform: translateX(-3px); }
+            98% { transform: translateX(3px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-401">
+        <header class="header">
+            <div class="brand">
+                <a href="/">PlayBook</a>
+            </div>
+        </header>
+        <main class="main-401">
+            <div class="error-container">
+                <img src="{{ url_for('static', filename='images/401.svg') }}" alt="Acceso Denegado" class="error-illustration" onerror="this.src='https://cdn.jsdelivr.net/gh/httpcats/http.cat/public/images/401.jpg'; this.style.borderRadius='10px';">
+                <h1 class="error-code">401</h1>
+                <h2 class="error-title">¡Acceso Denegado!</h2>
+                <p class="error-message">Lo sentimos, parece que no tienes los permisos necesarios para acceder a esta área. Si crees que esto es un error, contacta con el administrador.</p>
+                <div class="container__actions">
+                    <a href="/" class="btn btn--primary">Volver al inicio</a>
+                    <a href="/login" class="btn btn--secondary" style="margin-left: 10px;">Iniciar sesión</a>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

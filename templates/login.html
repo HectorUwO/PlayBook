@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Login</title>
+ <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
+ <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+ <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+</head>
+<body class="login-grid">
+ <div class="login-content">
+  <div class="login-one">
+   <a href="/" style="color: white;">Volver al inicio</a>
+   <h1 class="title" style="color: white;">Mi cuenta</h1>
+   <form class="form" id="loginForm" method="POST" action="{{ url_for('login') }}"> 
+    <div class="form__control">
+     <label for="nombre" class="label" style="color: white;">Nombre</label>
+     <input type="text" name="nombre" id="nombre" class="input" placeholder="Tu nombre completo" required>
+    </div>
+    <div class="form__control">
+     <label for="email" class="label" style="color: white;">Email</label>
+     <input type="email" name="email" id="email" class="input" placeholder="Tu correo electrónico" required>
+    </div>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert text-danger">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    <button type="submit" class="btn btn--primary">Entrar</button>
+   </form>
+  </div>
+  <div class="login-two">
+   <h2 class="title">¿Por qué debo tener una cuenta?</h2>
+   <div class="list">
+    <div class="list__item has-icon" style="display: flex;">
+     <span class="material-symbols-outlined">
+      library_books
+      </span>
+     <p>Alquila libros de nuestra enorme biblioteca</p>
+    </div>
+    <div class="list__item has-icon" style="display: flex;">
+     <span class="material-symbols-outlined">
+      adaptive_audio_mic
+      </span>
+     <p>Comparte tus experiencias con las personas</p>
+    </div>
+    <div class="list__item has-icon" style="display: flex;">
+     <span class="material-symbols-outlined">
+      public
+      </span>
+     <p>Dile al mundo quien eres</p>
+    </div>
+   </div>
+  </div>
+ </div>
+</body>
+</html>

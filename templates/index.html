@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Inicio | Playbooks</title>
+ <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+ <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
+ <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+ <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+ <meta name="description" content="Descubre, reserva y disfruta de tus libros favoritos con PlayBooks">
+</head>
+<body class="grid">
+    <div class="grid__item header">
+      <div class="navbar__brand">
+        <div class="brand"><a href="{{url_for('index')}}">PLAYBOOKS</a></div>
+      </div>
+      <div class="navbar__search">
+        <input type="text" class="input input--search" placeholder="Busca por título, autor o categoría...">
+        <span class="material-symbols-outlined has-icon-search">search</span>
+        <div class="search__container"></div>
+      </div>
+      <nav class="navbar__nav">
+        <ul class="nav">
+          <li class="navbar__item" id="adminSection" style="display: none;">
+            <a href="{{url_for('admin')}}" class="navbar__link has-icon">
+              <span class="material-symbols-outlined">shield_person</span>
+              Administrador
+            </a>
+          </li>
+          <li class="navbar__item" id="userSection" style="display: none;">
+            <a href="{{url_for('user')}}" class="navbar__link has-icon">
+              <span class="material-symbols-outlined">person</span>
+              Mi cuenta
+            </a>
+          </li>
+          <li class="navbar__item" id="closeSession" style="display: none;">
+            <a href="logout" class="navbar__link has-icon">
+              <span class="material-symbols-outlined">logout</span>
+              Cerrar Sesión
+            </a>
+          </li>
+          <li class="navbar__item" id="loginSection" style="display: none;">
+            <a href="login" class="navbar__link has-icon">
+              <span class="material-symbols-outlined">login</span>
+              Iniciar Sesión
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+
+    <section class="grid__item section">
+      <div class="hero__one">
+        <h2 class="subtitle subtitle--white">¡Llegaron nuevos libros para ti!</h2>
+        <p class="text text--white">Descubre nuestra colección actualizada con títulos fascinantes. Reserva ahora y sumérgete en nuevas aventuras literarias.</p>
+        <div class="container__actions">
+          <a href="#" class="btn btn--primary pulse-animation" id="sorprendemeBtn">
+            <span class="material-symbols-outlined">auto_awesome</span>
+            ¡Sorpréndeme!
+          </a>
+        </div>
+      </div>
+      <div class="hero__image">
+        <img src="{{ url_for('static', filename='images/hero_books.png') }}" alt="Colección de libros" class="hero--img">
+      </div>
+    </section>
+
+    <div class="grid__item main">
+      <ul class="tabs">
+        <li class="tabs__item">
+          <a href="#" data-categoria="Literatura y novelas" class="tabs__link--isActive">Literatura y novelas</a>
+        </li>
+        <li class="tabs__item">
+          <a href="#" data-categoria="Niños" class="tabs__link">Niños</a>
+        </li>
+        <li class="tabs__item">
+          <a href="#" data-categoria="Arte" class="tabs__link">Arte</a>
+        </li>
+        <li class="tabs__item">
+          <a href="#" data-categoria="Gastronomia" class="tabs__link">Gastronomía</a>
+        </li>
+        <li class="tabs__item">
+          <a href="#" data-categoria="Programación" class="tabs__link">Programación</a>
+        </li>
+        <li class="tabs__item">
+          <a href="#" data-categoria="Comics" class="tabs__link">Comics</a>
+        </li>
+      </ul>
+
+      <div class="container" style="margin-top: 30px;">
+        <!-- Contenido dinámico cargado por JavaScript -->
+      </div>
+    </div>
+
+    <!-- Toast para notificaciones -->
+    <div id="toast" class="toast">
+      <span class="material-symbols-outlined toast__icon"></span>
+      <div class="toast__message"></div>
+      <span class="material-symbols-outlined toast__close">close</span>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/tab-animation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
