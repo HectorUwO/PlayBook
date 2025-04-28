@@ -51,8 +51,8 @@ h1 {
  */
 
 hr {
-  box-sizing: content-box; /* 1 */
-  height: 0; /* 1 */
+  width: 100%; /* 1 */
+  height: 1px; /* 1 */
   overflow: visible; /* 2 */
 }
 

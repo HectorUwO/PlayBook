@@ -290,11 +290,11 @@ textarea {
 
 .btn--secondary {
  color: white;
- background-color: var(--success-color);
+ background-color: var(--primary-color);
 }
 
 .btn--secondary:hover {
- background-color: #0DA271;
+ background-color: var(--primary-hover);
  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
  transform: translateY(-2px);
 }

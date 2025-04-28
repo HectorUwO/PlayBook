@@ -5,7 +5,7 @@ from groq import Groq
 
 app = Flask(__name__)
 # MySQL Configuration
-app.config['MYSQL_HOST'] = os.getenv('DB_HOST', 'mysql')
+app.config['MYSQL_HOST'] = os.getenv('DB_HOST', 'localhost')
 app.config['MYSQL_USER'] = os.getenv('DB_USER', 'root')  
 app.config['MYSQL_PASSWORD'] = os.getenv('DB_PASSWORD', '') 
 app.config['MYSQL_DB'] = os.getenv('DB_NAME', 'playbook')  
