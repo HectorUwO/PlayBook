@@ -12,16 +12,17 @@
 <body class="login-grid">
  <div class="login-content">
   <div class="login-one">
-   <a href="/" style="color: white;">Volver al inicio</a>
+    <div class="brand brand--login">PLAYBOOKS</div>
+
    <h1 class="title" style="color: white;">Mi cuenta</h1>
-   <form class="form" id="loginForm" method="POST" action="{{ url_for('login') }}"> 
+   <form class="form" id="loginForm" method="POST" action="{{ url_for('login') }}" style="margin-bottom: 20px;"> 
     <div class="form__control">
-     <label for="nombre" class="label" style="color: white;">Nombre</label>
-     <input type="text" name="nombre" id="nombre" class="input" placeholder="Tu nombre completo" required>
+     <label for="nombre" class="label" style="color: white;">Correo electrónico</label>
+     <input type="email" name="nombre" id="nombre" class="input" placeholder="Ingresa tu correo electrónico" required>
     </div>
     <div class="form__control">
-     <label for="email" class="label" style="color: white;">Email</label>
-     <input type="email" name="email" id="email" class="input" placeholder="Tu correo electrónico" required>
+     <label for="email" class="label" style="color: white;">Contraseña</label>
+     <input type="password" name="email" id="email" class="input" placeholder="Ingresa tu contraseña" required>
     </div>
     {% with messages = get_flashed_messages() %}
       {% if messages %}
@@ -30,8 +31,9 @@
         {% endfor %}
       {% endif %}
     {% endwith %}
-    <button type="submit" class="btn btn--primary">Entrar a mi cuenta</button>
+    <button type="submit" class="btn btn--primary btn--large">Entrar a mi cuenta</button>
    </form>
+      <a href="/" style="color: white;">Volver al inicio</a>
   </div>
   <div class="login-two">
    <h2 class="title">¿Por qué debo tener una cuenta?</h2>
