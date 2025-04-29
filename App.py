@@ -809,4 +809,4 @@ def generate_description():
         return jsonify({'error': 'Error del servidor', 'message': str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=80, debug=True)
