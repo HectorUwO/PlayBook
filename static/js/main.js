@@ -331,3 +331,14 @@ function showToast(message, type = 'success') {
     }, 5000);
 }
 
+const btnSearchMobile = document.querySelector('#btn-search-mobile');
+const searchMobileBox = document.querySelector('.search-mobile');
+const btnCloseMobile = document.querySelector('#close-mobile');
+
+
+btnSearchMobile.addEventListener('click', () => {
+    searchMobileBox.style.display = 'block';
+});
+btnCloseMobile.addEventListener('click', () => {
+    searchMobileBox.style.display = 'none';
+});

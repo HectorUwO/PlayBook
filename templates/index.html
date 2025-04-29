@@ -14,13 +14,22 @@
     <div class="grid__item header">
       <div class="navbar__brand">
         <div class="brand"><a href="{{url_for('index')}}">PLAYBOOKS</a></div>
+        <div class="mobile-nav">
+          <a href="#" class="navbar__link has-icon" id="btn-search-mobile">
+            <span class="material-symbols-outlined">search</span>
+          </a>
+          <a href="login" class="navbar__link has-icon">
+            <span class="material-symbols-outlined">account_circle</span>
+          </a>
+        </div>
+
       </div>
       <div class="navbar__search">
         <input type="text" class="input input--search" placeholder="Busca por título, autor o categoría...">
         <span class="material-symbols-outlined has-icon-search">search</span>
         <div class="search__container"></div>
       </div>
-      <nav class="navbar__nav">
+      <nav class="navbar__nav" style="margin-left: auto;">
         <ul class="nav">
           <li class="navbar__item" id="adminSection" style="display: none;">
             <a href="{{url_for('admin')}}" class="navbar__link has-icon">
@@ -42,7 +51,7 @@
           </li>
           <li class="navbar__item" id="loginSection" style="display: none;">
             <a href="login" class="navbar__link has-icon">
-              <span class="material-symbols-outlined">login</span>
+              <span class="material-symbols-outlined">account_circle</span>
               Iniciar Sesión
             </a>
           </li>
@@ -55,7 +64,7 @@
         <h2 class="subtitle subtitle--white">¡Llegaron nuevos libros para ti!</h2>
         <p class="text text--white">Descubre nuestra colección actualizada con títulos fascinantes. Reserva ahora y sumérgete en nuevas aventuras literarias.</p>
         <div class="container__actions">
-          <a href="#" class="btn btn--primary pulse-animation" id="sorprendemeBtn">
+          <a href="#" class="btn btn--primary pulse-animation has-icon" id="sorprendemeBtn">
             <span class="material-symbols-outlined">auto_awesome</span>
             ¡Sorpréndeme!
           </a>
@@ -69,7 +78,10 @@
     <div class="grid__item main">
       <ul class="tabs">
         <li class="tabs__item">
-          <a href="#" data-categoria="Literatura y novelas" class="tabs__link--isActive">Literatura y novelas</a>
+          <a href="#" data-categoria="Literatura y novelas" class="tabs__link--isActive">Descubrir libros</a>
+        </li>
+        <li class="tabs__item">
+          <a href="#" data-categoria="Literatura y novelas" class="tabs__link">Literatura y novelas</a>
         </li>
         <li class="tabs__item">
           <a href="#" data-categoria="Niños" class="tabs__link">Niños</a>
@@ -90,6 +102,56 @@
 
       <div class="container" style="margin-top: 30px;">
         <!-- Contenido dinámico cargado por JavaScript -->
+      </div>
+    </div>
+
+    <div class="search-mobile">
+      <div class="search-mobile__header">
+        <h1>Busca un libro</h1>
+        <span class="material-symbols-outlined" id="close-mobile">close</span>
+      </div>
+      <div class="search-mobile__content">
+        <div class="navbar__search--mobile">
+          <input type="text" class="input input--search" placeholder="Busca por título, autor o categoría...">
+        </div>
+
+        <div class="search__results">
+          <a href="/libro/${libro.id}" class="a-search">
+            <div class="search__card">
+                <div class="search__image">
+                    <img src="/static/img/loading.gif" 
+                         alt="${libro.titulo}" 
+                         class="search--img"
+                         data-isbn="${libro.isbn}">
+                </div>
+                <div class="search__content">
+                    <div class="search__text">Cien años de soledad (2015)</div>
+                    <p class="search__autor">Gabriel García Márquez</p>
+                </div>
+                <div class="search__estado ${getEstadoClass(libro.estado)}">
+                    Disponible
+                </div>
+            </div>
+        </a>
+          <a href="/libro/${libro.id}" class="a-search">
+            <div class="search__card">
+                <div class="search__image">
+                    <img src="/static/img/loading.gif" 
+                         alt="${libro.titulo}" 
+                         class="search--img"
+                         data-isbn="${libro.isbn}">
+                </div>
+                <div class="search__content">
+                    <div class="search__text">Cien años de soledad (2015)</div>
+                    <p class="search__autor">Gabriel García Márquez</p>
+                </div>
+                <div class="search__estado ${getEstadoClass(libro.estado)}">
+                    Disponible
+                </div>
+            </div>
+        </a>
+
+        </div>
       </div>
     </div>
 
