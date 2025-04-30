@@ -18,8 +18,14 @@
           <a href="#" class="navbar__link has-icon" id="btn-search-mobile">
             <span class="material-symbols-outlined">search</span>
           </a>
-          <a href="login" class="navbar__link has-icon">
+          <a href="{{url_for('admin')}}" class="navbar__link has-icon" id="mobile-admin-btn" style="display: none;">
+            <span class="material-symbols-outlined">shield_person</span>
+          </a>
+          <a href="login" class="navbar__link has-icon" id="mobile-login-btn">
             <span class="material-symbols-outlined">account_circle</span>
+          </a>
+          <a href="logout" class="navbar__link has-icon" id="mobile-logout-btn" style="display: none;">
+            <span class="material-symbols-outlined">logout</span>
           </a>
         </div>
 
@@ -78,7 +84,7 @@
     <div class="grid__item main">
       <ul class="tabs">
         <li class="tabs__item">
-          <a href="#" data-categoria="Literatura y novelas" class="tabs__link--isActive">Descubrir libros</a>
+          <a href="#" data-categoria="Todos" class="tabs__link--isActive todos">Descubrir libros</a>
         </li>
         <li class="tabs__item">
           <a href="#" data-categoria="Literatura y novelas" class="tabs__link">Literatura y novelas</a>
@@ -116,41 +122,6 @@
         </div>
 
         <div class="search__results">
-          <a href="/libro/${libro.id}" class="a-search">
-            <div class="search__card">
-                <div class="search__image">
-                    <img src="/static/img/loading.gif" 
-                         alt="${libro.titulo}" 
-                         class="search--img"
-                         data-isbn="${libro.isbn}">
-                </div>
-                <div class="search__content">
-                    <div class="search__text">Cien años de soledad (2015)</div>
-                    <p class="search__autor">Gabriel García Márquez</p>
-                </div>
-                <div class="search__estado ${getEstadoClass(libro.estado)}">
-                    Disponible
-                </div>
-            </div>
-        </a>
-          <a href="/libro/${libro.id}" class="a-search">
-            <div class="search__card">
-                <div class="search__image">
-                    <img src="/static/img/loading.gif" 
-                         alt="${libro.titulo}" 
-                         class="search--img"
-                         data-isbn="${libro.isbn}">
-                </div>
-                <div class="search__content">
-                    <div class="search__text">Cien años de soledad (2015)</div>
-                    <p class="search__autor">Gabriel García Márquez</p>
-                </div>
-                <div class="search__estado ${getEstadoClass(libro.estado)}">
-                    Disponible
-                </div>
-            </div>
-        </a>
-
         </div>
       </div>
     </div>
@@ -164,5 +135,6 @@
 
     <script src="{{ url_for('static', filename='js/tab-animation.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 </body>
 </html>

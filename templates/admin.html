@@ -16,6 +16,12 @@
         <div class="navbar__brand">
             <div class="brand"><a href="{{url_for('index')}}">PLAYBOOKS</a></div>
         </div>
+        <a href="#" class="navbar__link has-icon" id="btn-search-mobile" style="display: none;">
+            <span class="material-symbols-outlined">search</span>
+        </a>
+        <a href="#" class="navbar__link has-icon" id="close-mobile" style="display: none;">
+            <span class="material-symbols-outlined">search</span>
+        </a>
         <nav class="navbar__nav">
             <ul class="nav">
                 <li class="navbar__item" id="adminSection" style="display: none;">
@@ -191,10 +197,11 @@
                             <div class="form-group">
                                 <label class="form-label" for="isbn">ISBN</label>
                                 <input class="form-control" type="text" id="isbn" placeholder="ISBN" required>
+                                <div class="invalid-feedback">La portada se genera con base al ISBN real</div>
                             </div>
                             <div class="form-group">
                                 <label class="form-label" for="categoria">Categoría</label>
-                                <select class="form-control" id="categoria" required>
+                                <select class="form-control-1" id="categoria" required>
                                     <option value="">Seleccione una categoría</option>
                                     <option value="Literatura y novelas">Literatura y novelas</option>
                                     <option value="Niños">Niños</option>
@@ -280,7 +287,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="form-label" for="categoriaGestionar">Categoría</label>
-                                <select class="form-control" id="categoriaGestionar" required>
+                                <select class="form-control-1" id="categoriaGestionar" required>
                                     <option value="">Seleccione una categoría</option>
                                     <option value="Literatura y novelas">Literatura y novelas</option>
                                     <option value="Niños">Niños</option>
@@ -303,7 +310,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="form-label" for="estadoGestionar">Estado</label>
-                                <select class="form-control" id="estadoGestionar" required>
+                                <select class="form-control-1" id="estadoGestionar" required>
                                     <option value="disponible">Disponible</option>
                                     <option value="agotado">Agotado</option>
                                     <option value="mantenimiento">Mantenimiento</option>
@@ -345,11 +352,11 @@
                         </div>
                         
                         <form class="admin-form" id="formPrestamo">
-                            <div class="form-group">
+                            <div class="form-group formbook">
                                 <label class="form-label" for="idLibro">ID del libro</label>
                                 <input class="form-control" type="number" id="idLibro" placeholder="ID del libro" required readonly>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group formuser">
                                 <label class="form-label" for="idUsuario">ID del usuario</label>
                                 <input class="form-control" type="number" id="idUsuario" placeholder="ID del usuario" required readonly>
                             </div>
@@ -440,15 +447,50 @@
                                 <label class="form-label" for="email">Correo electrónico</label>
                                 <input class="form-control" type="email" id="email" placeholder="Correo electrónico" required>
                             </div>
+                            <div class="form-group">
+                                <label class="form-label" for="password">Contraseña</label>
+                                <input class="form-control"  id="password" placeholder="Contraseña" required>
+                            </div>
                             <div class="form-group admin-form__full">
                                 <label class="form-label" for="privilegios">Nivel de permisos</label>
-                                <select class="form-control" id="privilegios" required>
+                                <select class="form-control-1" id="privilegios" required>
                                     <option value="usuario">Usuario</option>
                                     <option value="admin">Administrador</option>
                                 </select>
                             </div>
                             <div class="form-group admin-form__full">
                                 <button type="submit" class="btn btn-primary">Registrar Usuario</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card__header">
+                        <h2 class="card__title">Eliminar Usuario</h2>
+                    </div>
+                    <div class="card__body">
+                        <div class="search-container">
+                            <span class="material-symbols-outlined search-icon">person</span>
+                            <input type="text" class="search-input" id="searchUsuarioEliminar" placeholder="Buscar usuario por nombre o correo...">
+                            <div id="resultadosUsuarioEliminar" class="search-results"></div>
+                        </div>
+                        
+                        <form class="admin-form" id="formEliminarUsuario">
+                            <div class="form-group">
+                                <label class="form-label" for="idUsuarioEliminar">ID del usuario</label>
+                                <input class="form-control" type="number" id="idUsuarioEliminar" placeholder="ID del usuario" required readonly>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="nombreUsuarioEliminar">Nombre</label>
+                                <input class="form-control" type="text" id="nombreUsuarioEliminar" placeholder="Nombre del usuario" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="emailUsuarioEliminar">Correo electrónico</label>
+                                <input class="form-control" type="email" id="emailUsuarioEliminar" placeholder="Correo del usuario" readonly>
+                            </div>
+                            <div class="form-group admin-form__full">
+                                <button type="submit" class="btn btn-danger">Eliminar Usuario</button>
                             </div>
                         </form>
                     </div>
@@ -538,7 +580,76 @@
     <button class="mobile-toggle" style="display: none;">
         <span class="material-symbols-outlined">menu</span>
     </button>
+    
+    <!-- Delete Book Confirmation Modal -->
+    <div id="deleteBookModal" class="confirmation-modal">
+        <div class="confirmation-modal__content">
+            <span class="modal-close">&times;</span>
+            <div class="confirmation-modal__icon">
+                <span class="material-symbols-outlined">warning</span>
+            </div>
+            <h2 class="confirmation-modal__title">Confirmar eliminación</h2>
+            <p class="confirmation-modal__message">¿Está seguro que desea eliminar este libro? Esta acción no se puede deshacer.</p>
+            <div class="confirmation-modal__book-info">
+                <p><strong>Título:</strong> <span id="deleteBookTitle"></span></p>
+                <p><strong>Autor:</strong> <span id="deleteBookAuthor"></span></p>
+            </div>
+            <div class="confirmation-modal__buttons">
+                <button id="cancelDeleteBook" class="btn">Cancelar</button>
+                <button id="confirmDeleteBook" class="btn btn-danger">Eliminar</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete User Confirmation Modal -->
+    <div id="deleteUserModal" class="confirmation-modal">
+        <div class="confirmation-modal__content">
+            <span class="modal-close">&times;</span>
+            <div class="confirmation-modal__icon">
+                <span class="material-symbols-outlined">warning</span>
+            </div>
+            <h2 class="confirmation-modal__title">Confirmar eliminación</h2>
+            <p class="confirmation-modal__message">¿Está seguro que desea eliminar este usuario? Esta acción no se puede deshacer.</p>
+            <div class="confirmation-modal__user-info">
+                <p><strong>Nombre:</strong> <span id="deleteUserName"></span></p>
+                <p><strong>Email:</strong> <span id="deleteUserEmail"></span></p>
+            </div>
+            <div class="confirmation-modal__buttons">
+                <button id="cancelDeleteUser" class="btn">Cancelar</button>
+                <button id="confirmDeleteUser" class="btn btn-danger">Eliminar</button>
+            </div>
+        </div>
+    </div>
+    
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+    
+    <!-- ISBN Duplicate Book Modal -->
+    <div id="isbnDuplicateModal" class="confirmation-modal">
+        <div class="confirmation-modal__content">
+            <span class="modal-close">&times;</span>
+            <div class="confirmation-modal__icon">
+                <span class="material-symbols-outlined">info</span>
+            </div>
+            <h2 class="confirmation-modal__title">ISBN Duplicado</h2>
+            <p class="confirmation-modal__message">Ya existe un libro con este ISBN en la base de datos:</p>
+            <div class="confirmation-modal__book-info">
+                <div class="book-cover-container" style="max-width: 150px; margin: 0 auto 1rem;">
+                    <img id="modalPortada" src="/static/covers/no-cover.png" alt="Portada del libro" class="book-cover">
+                </div>
+                <p><strong>Título:</strong> <span id="modalTitulo"></span></p>
+                <p><strong>Autor:</strong> <span id="modalAutor"></span></p>
+                <p><strong>Año:</strong> <span id="modalAnio"></span></p>
+                <p><strong>Categoría:</strong> <span id="modalCategoria"></span></p>
+                <p><strong>ISBN:</strong> <span id="modalIsbn"></span></p>
+                <p><strong>Stock:</strong> <span id="modalStock"></span></p>
+                <p><strong>Estado:</strong> <span id="modalEstado"></span></p>
+            </div>
+            <div class="confirmation-modal__buttons">
+                <button id="btnCerrarModal" class="btn">Cancelar</button>
+                <button id="btnVerLibro" class="btn btn-primary">Ver detalles del libro</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

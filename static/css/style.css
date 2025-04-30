@@ -1066,6 +1066,13 @@ button {
  display: none;
 }
 
+#mobile-logout-btn {
+ padding-bottom: 0%;
+}
+
+#mobile-admin-btn {
+    padding-bottom: 0%;
+}
 /* Media queries para responsive */
 @media (max-width: 768px) {
  .header {

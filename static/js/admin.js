@@ -97,6 +97,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         const userData = {
             nombre: document.getElementById('nombre').value,
             email: document.getElementById('email').value,
+            password: document.getElementById('password').value, // Add password field
             privilegios: document.getElementById('privilegios').value
         };
 
@@ -494,6 +495,8 @@ document.addEventListener('DOMContentLoaded', async function() {
 
             const data = await response.json();
             if (response.ok) {
+                document.getElementById('cardGestionar').style.visibility = 'hidden';
+                window.scrollTo(0, 0);
                 showToast('Libro actualizado exitosamente', 'success');
                 await actualizarEstadisticas();
                 // Update original data after successful update
@@ -507,35 +510,128 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     });
 
-    btnEliminar?.addEventListener('click', async function() {
-        const libroId = document.getElementById('libroId').value;
-        if (!libroId) {
-            showToast('Por favor seleccione un libro primero', 'warning');
-            return;
-        }
-
-        if (!confirm('¿Está seguro que desea eliminar este libro?')) {
-            return;
-        }
-
-        try {
-            const response = await fetch(`/api/libros/${libroId}`, {
-                method: 'DELETE'
+    // Setup modal controls
+    const setupModalControls = function() {
+        // Book deletion modal controls
+        const deleteBookModal = document.getElementById('deleteBookModal');
+        const bookModalClose = deleteBookModal.querySelector('.modal-close');
+        const cancelDeleteBook = document.getElementById('cancelDeleteBook');
+        const confirmDeleteBook = document.getElementById('confirmDeleteBook');
+        
+        // Add missing event listener for delete button
+        const btnEliminar = document.getElementById('btnEliminar');
+        if (btnEliminar) {
+            btnEliminar.addEventListener('click', function() {
+                const libroId = document.getElementById('libroId').value;
+                if (!libroId) {
+                    showToast('No hay libro seleccionado para eliminar', 'warning');
+                    return;
+                }
+                
+                // Populate modal with book information
+                const titulo = document.getElementById('tituloGestionar').value;
+                const autor = document.getElementById('autorGestionar').value;
+                
+                document.getElementById('deleteBookTitle').textContent = titulo;
+                document.getElementById('deleteBookAuthor').textContent = autor;
+                
+                // Set the book ID on the confirm button
+                confirmDeleteBook.setAttribute('data-id', libroId);
+                
+                // Show the modal
+                deleteBookModal.style.display = 'block';
             });
-
-            if (response.ok) {
-                formGestionar.reset();
-                showToast('Libro eliminado exitosamente', 'success');
-                await actualizarEstadisticas();
-            } else {
-                const data = await response.json();
-                showToast(data.error || 'Error al eliminar el libro', 'error');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            showToast('Error al conectar con el servidor', 'error');
         }
-    });
+        
+        bookModalClose.addEventListener('click', function() {
+            deleteBookModal.style.display = 'none';
+        });
+        
+        cancelDeleteBook.addEventListener('click', function() {
+            deleteBookModal.style.display = 'none';
+        });
+        
+        confirmDeleteBook.addEventListener('click', async function() {
+            const libroId = this.getAttribute('data-id');
+            window.scrollTo(0, 0);
+            deleteBookModal.style.display = 'none';
+            
+            try {
+                const response = await fetch(`/api/libros/${libroId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    document.getElementById('formGestionar').reset();
+                    document.getElementById('cardGestionar').style.visibility = 'hidden';
+                    showToast('Libro eliminado exitosamente', 'success');
+                    await actualizarEstadisticas();
+                } else {
+                    const data = await response.json();
+                    showToast(data.error || 'Error al eliminar el libro', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error al conectar con el servidor', 'error');
+            }
+        });
+        
+        // User deletion modal controls
+        const deleteUserModal = document.getElementById('deleteUserModal');
+        const userModalClose = deleteUserModal.querySelector('.modal-close');
+        const cancelDeleteUser = document.getElementById('cancelDeleteUser');
+        const confirmDeleteUser = document.getElementById('confirmDeleteUser');
+        
+        userModalClose.addEventListener('click', function() {
+            deleteUserModal.style.display = 'none';
+        });
+        
+        cancelDeleteUser.addEventListener('click', function() {
+            deleteUserModal.style.display = 'none';
+        });
+        
+        confirmDeleteUser.addEventListener('click', async function() {
+            const userId = this.getAttribute('data-id');
+            deleteUserModal.style.display = 'none';
+            window.scrollTo(0, 0);
+            
+            try {
+                const response = await fetch(`/api/usuarios/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('formEliminarUsuario').reset();
+                    document.getElementById('searchUsuarioEliminar').value = '';
+                    showToast('Usuario eliminado exitosamente', 'success');
+                    await actualizarEstadisticas();
+                } else {
+                    showToast(data.error || 'Error al eliminar usuario', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error al conectar con el servidor', 'error');
+            }
+        });
+        
+        // Close modals when clicking outside
+        window.addEventListener('click', function(e) {
+            if (e.target === deleteBookModal) {
+                deleteBookModal.style.display = 'none';
+            }
+            if (e.target === deleteUserModal) {
+                deleteUserModal.style.display = 'none';
+            }
+        });
+    };
+
+    // Call this at the end of DOMContentLoaded
+    setupModalControls();
 
     // Validación personalizada para campos requeridos
     document.querySelectorAll('form').forEach(form => {
@@ -614,8 +710,118 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (btnGenerarDescripcion) {
         btnGenerarDescripcion.addEventListener('click', generarDescripcionLibro);
     }
-});
 
+    // Después de todos los event listeners pero antes del final del DOMContentLoaded
+    // Agregar manejadores para la búsqueda y eliminación de usuarios
+    const searchUsuarioEliminar = document.getElementById('searchUsuarioEliminar');
+    const resultadosUsuarioEliminar = document.getElementById('resultadosUsuarioEliminar');
+    const formEliminarUsuario = document.getElementById('formEliminarUsuario');
+
+    // Búsqueda de usuarios para eliminar
+    searchUsuarioEliminar?.addEventListener('input', async function() {
+        const searchTerm = this.value.trim();
+        if (searchTerm.length < 2) {
+            resultadosUsuarioEliminar.innerHTML = '';
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/usuarios/buscar?q=${searchTerm}`);
+            const usuarios = await response.json();
+            
+            resultadosUsuarioEliminar.style.display = 'block';
+            resultadosUsuarioEliminar.innerHTML = usuarios.map(usuario => `
+                <a href="#" class="a-search" data-id="${usuario.id}" data-nombre="${usuario.nombre}" data-email="${usuario.email}">
+                    <div class="search__card">
+                        <div class="search__content">
+                            <div class="search__text">${usuario.nombre}</div>
+                            <p class="search__autor">${usuario.email}</p>
+                        </div>
+                    </div>
+                </a>
+            `).join('');
+
+            // Agregar eventos click a los resultados
+            resultadosUsuarioEliminar.querySelectorAll('.a-search').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.getElementById('idUsuarioEliminar').value = item.dataset.id;
+                    document.getElementById('nombreUsuarioEliminar').value = item.dataset.nombre;
+                    document.getElementById('emailUsuarioEliminar').value = item.dataset.email;
+                    searchUsuarioEliminar.value = item.querySelector('.search__text').textContent;
+                    resultadosUsuarioEliminar.innerHTML = '';
+                    resultadosUsuarioEliminar.style.display = 'none';
+                });
+            });
+        } catch (error) {
+            console.error('Error:', error);
+            showToast('Error al buscar usuarios', 'error');
+        }
+    });
+
+    // Manejar el formulario de eliminación de usuario
+    formEliminarUsuario?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const userId = document.getElementById('idUsuarioEliminar').value;
+        if (!userId) {
+            showToast('Por favor seleccione un usuario para eliminar', 'warning');
+            return;
+        }
+
+        // Open the delete user confirmation modal instead of using confirm()
+        const userName = document.getElementById('nombreUsuarioEliminar').value;
+        const userEmail = document.getElementById('emailUsuarioEliminar').value;
+        
+        // Populate the modal with user details
+        document.getElementById('deleteUserName').textContent = userName;
+        document.getElementById('deleteUserEmail').textContent = userEmail;
+        
+        // Open the modal
+        const modal = document.getElementById('deleteUserModal');
+        modal.style.display = 'block';
+        
+        // Store the user ID for the confirmation button to use
+        document.getElementById('confirmDeleteUser').setAttribute('data-id', userId);
+    });
+
+    // Handle ISBN changes in the Gestionar tab to update book cover
+    const isbnGestionarField = document.getElementById('isbnGestionar');
+    const portadaGestionar = document.getElementById('portadaGestionar');
+
+    if (isbnGestionarField && portadaGestionar) {
+        // Add event listener for ISBN changes in Gestionar tab
+        isbnGestionarField.addEventListener('change', function() {
+            updateBookCoverByISBN(isbnGestionarField, portadaGestionar);
+        });
+        
+        isbnGestionarField.addEventListener('input', function() {
+            // Optional: Use a debounce function here to avoid too many API calls
+            // For simplicity, we're using setTimeout
+            clearTimeout(this.timeoutId);
+            this.timeoutId = setTimeout(() => {
+                updateBookCoverByISBN(isbnGestionarField, portadaGestionar);
+            }, 500); // Wait 500ms after typing stops
+        });
+    }
+
+    // Ensure the ISBN field in the Agregar tab also uses the new reusable function
+    const isbnField = document.getElementById('isbn');
+    const portadaAgregar = document.getElementById('portadaAgregar');
+
+    if (isbnField && portadaAgregar) {
+        isbnField.addEventListener('change', function() {
+            updateBookCoverByISBN(isbnField, portadaAgregar);
+        });
+        
+        isbnField.addEventListener('input', function() {
+            clearTimeout(this.timeoutId);
+            this.timeoutId = setTimeout(() => {
+                updateBookCoverByISBN(isbnField, portadaAgregar);
+            }, 500);
+        });
+    }
+});
 
 // Función para cargar la portada desde un ISBN
 async function cargarPortadaDesdeISBN(isbn, imgElementId) {

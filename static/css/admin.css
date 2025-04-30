@@ -191,6 +191,16 @@
   transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
 }
 
+.form-control-1 {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--border-radius);
+  background-color: var(--light-color);
+  transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
 .form-control:focus {
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.25);
@@ -583,6 +593,13 @@ select.form-control {
   width: 100%;
 }
 
+.form-control:read-only {
+  background-color: rgba(77, 77, 77, 0.233);
+  cursor: not-allowed;
+  border-color: var(--gray-300);
+  color: var(--gray-700);
+}
+
 .description-container textarea {
   width: 100%;
 }
@@ -622,6 +639,481 @@ select.form-control {
   color: var(--gray-600);
 }
 
-sidebar__return {
+/* Confirmation Modal Styles */
+.confirmation-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1100;
+  animation: fadeIn 0.3s ease;
+  overflow-y: auto;
+}
 
+.confirmation-modal__content {
+  position: relative;
+  background-color: white;
+  margin: 10% auto;
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+  max-width: 500px;
+  animation: slideIn 0.3s ease;
+  width: 90%;
+}
+
+.confirmation-modal__icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.confirmation-modal__icon .material-symbols-outlined {
+  font-size: 4rem;
+  color: var(--warning-color);
+}
+
+.confirmation-modal__title {
+  text-align: center;
+  margin: 0 0 1rem;
+  color: var(--gray-800);
+}
+
+.confirmation-modal__message {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: var(--gray-700);
+}
+
+.confirmation-modal__book-info,
+.confirmation-modal__user-info {
+  background-color: var(--gray-100);
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  margin-bottom: 1.5rem;
+}
+
+.confirmation-modal__buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 1rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--gray-600);
+}
+
+.modal-close:hover {
+  color: var(--gray-900);
+}
+
+/* Enhanced Responsive Styles */
+@media (max-width: 1200px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .admin-form--three-columns {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .admin-container {
+    grid-template-columns: 220px 1fr;
+  }
+  
+  .sidebar__title {
+    font-size: 1.1rem;
+  }
+  
+  .sidebar__link, .sidebar__return {
+    padding: 0.6rem 1rem;
+  }
+  
+  .sidebar__icon {
+    margin-right: 0.5rem;
+  }
+  
+  .main-content {
+    padding: 1.5rem;
+  }
+  
+  .card {
+    padding: 1.25rem;
+  }
+  
+  .admin-form--three-columns,
+  .admin-form {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  
+  .book-cover-container {
+    grid-row: span 2;
+    grid-column: span 2;
+    max-width: 200px;
+    margin: 0 auto 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .sidebar {
+    position: fixed;
+    left: -280px;
+    top: 0;
+    bottom: 0;
+    width: 280px;
+    height: 100vh;
+    z-index: 1000;
+    transition: left var(--transition-speed);
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    margin-bottom: 0;
+  }
+  
+  .sidebar--open {
+    left: 0;
+  }
+  
+  .main-content {
+    padding: 1rem;
+    margin-left: 0;
+    width: 100%;
+  }
+  
+  .mobile-toggle {
+    display: block !important;
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    background-color: var(--primary-color);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    border: none;
+    cursor: pointer;
+  }
+
+  .panel__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .panel__title {
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .admin-form,
+  .admin-form--three-columns {
+    grid-template-columns: 1fr;
+  }
+  
+  .book-cover-container {
+    grid-row: span 1;
+    grid-column: span 1;
+  }
+  
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  .btn-group {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .btn {
+    width: 100%;
+  }
+  
+  .confirmation-modal__content {
+    margin: 5% auto;
+    padding: 1.5rem;
+    max-width: 90%;
+  }
+  
+  .data-table th, 
+  .data-table td {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+  
+  /* Improve table scrolling on mobile */
+  .table-container {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Make sure search elements work well on mobile */
+  .search-input {
+    padding-left: 3rem;
+  }
+  
+  .search-results {
+    max-height: 200px;
+  }
+}
+
+@media (max-width: 576px) {
+  .card {
+    padding: 1rem;
+  }
+  
+  .stat-card {
+    padding: 1rem;
+  }
+  
+  .stat-card__title {
+    font-size: 0.8rem;
+  }
+  
+  .stat-card__value {
+    font-size: 1.5rem;
+  }
+  
+  .form-label {
+    font-size: 0.9rem;
+  }
+  
+  .form-control, 
+  .form-control-1 {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+  }
+  
+  .btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  /* Adjust table display for very small screens */
+  .data-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  
+  .search-input {
+    font-size: 0.9rem;
+  }
+  
+  /* Improve modal display on small screens */
+  .confirmation-modal__content {
+    padding: 1.25rem;
+  }
+  
+  .confirmation-modal__title {
+    font-size: 1.25rem;
+  }
+  
+  .confirmation-modal__message {
+    font-size: 0.9rem;
+  }
+  
+  .confirmation-modal__icon .material-symbols-outlined {
+    font-size: 3rem;
+  }
+  
+  /* Make pagination controls more compact */
+  .pagination-controls {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  /* Adjust the search container */
+  .search-container {
+    position: relative;
+    margin-bottom: 1rem;
+  }
+  
+  .search-input {
+    padding-right: 1rem;
+  }
+  
+  /* Adjust description generator button */
+  #btnGenerarDescripcion {
+    position: relative;
+    top: 0;
+    right: 0;
+    margin-top: 0.5rem;
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .description-container {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+/* Touch-friendly adjustments */
+@media (hover: none) {
+  .sidebar__link, 
+  .sidebar__return,
+  .btn,
+  .search-item {
+    /* Increase touch target size */
+    padding: 0.75rem 1.25rem;
+  }
+  
+  /* Add active state for touch devices */
+  .btn:active {
+    transform: scale(0.98);
+  }
+  
+  /* Make sure buttons have enough spacing */
+  .btn-group {
+    gap: 0.75rem;
+  }
+}
+
+/* Fix for tablets in landscape mode */
+@media (min-width: 768px) and (max-width: 992px) and (orientation: landscape) {
+  .admin-container {
+    grid-template-columns: 250px 1fr;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+}
+
+/* Adjustments for high-resolution mobile devices */
+@media (max-width: 576px) and (min-resolution: 2dppx) {
+  .btn, 
+  .form-control,
+  .form-control-1,
+  .sidebar__link {
+    /* Slightly larger touch targets for high-res screens */
+    padding: 0.8rem 1rem;
+  }
+}
+
+/* Improved table responsiveness for small screens */
+@media (max-width: 768px) {
+  .data-table {
+    /* Optional: Convert table to cards on very small screens */
+    /* Enable this if tables are too complex for mobile scrolling */
+    /*
+    thead {
+      display: none;
+    }
+    
+    tbody tr {
+      display: block;
+      margin-bottom: 1rem;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--border-radius);
+    }
+    
+    tbody td {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.6rem 1rem;
+      text-align: right;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    
+    tbody td:before {
+      content: attr(data-label);
+      font-weight: 600;
+      text-align: left;
+    }
+    */
+  }
+}
+
+/* Print styles for reports */
+@media print {
+  .sidebar, 
+  .mobile-toggle,
+  .search-container,
+  .btn-group,
+  .form-group button {
+    display: none !important;
+  }
+  
+  .admin-container {
+    display: block;
+  }
+  
+  .main-content {
+    padding: 0;
+  }
+  
+  .panel {
+    display: block !important;
+    page-break-inside: avoid;
+  }
+  
+  .card {
+    border: 1px solid #ddd;
+    box-shadow: none;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .data-table th,
+  .data-table td {
+    padding: 0.5rem;
+  }
 }

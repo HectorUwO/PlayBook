@@ -174,15 +174,16 @@ def libro(id):
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        nombre = request.form.get('nombre', '').strip()
-        email = request.form.get('email', '').strip()
-        
-        if not nombre or not email:
+        email = request.form.get('email', '').strip().lower()
+        print(email)
+        contraseña = request.form.get('contraseña', '').strip()
+        print(contraseña)
+        if not email or not contraseña:
             flash('Por favor complete todos los campos')
             return render_template("login.html"), 400
         
         cursor = mysql.connection.cursor()
-        cursor.execute('SELECT id, email, nombre, rol FROM usuarios WHERE email = %s AND nombre = %s', (email, nombre))
+        cursor.execute('SELECT id, email, nombre, rol FROM usuarios WHERE contraseña = %s AND email = %s', (contraseña, email))
         user = cursor.fetchone()
         cursor.close()
         
@@ -194,7 +195,7 @@ def login():
             session['rol'] = user[3] 
             return redirect(url_for('index'))
         else:
-            flash('Usuario o email incorrectos')
+            flash('Contraseña o email incorrectos')
     
     return render_template("login.html")
 
@@ -689,7 +690,7 @@ def crear_usuario():
         return jsonify({'error': 'No autorizado'}), 401
         
     data = request.get_json()
-    if not data or not all(k in data for k in ('nombre', 'email', 'privilegios')):
+    if not data or not all(k in data for k in ('nombre', 'email', 'password', 'privilegios')):
         return jsonify({'error': 'Datos incompletos'}), 400
         
     cursor = mysql.connection.cursor()
@@ -699,11 +700,11 @@ def crear_usuario():
         if cursor.fetchone():
             return jsonify({'error': 'El email ya está registrado'}), 400
             
-        # Crear el usuario
+        # Crear el usuario con contraseña
         cursor.execute('''
-            INSERT INTO usuarios (nombre, email, rol)
-            VALUES (%s, %s, %s)
-        ''', (data['nombre'], data['email'], data['privilegios']))
+            INSERT INTO usuarios (nombre, email, contraseña, rol)
+            VALUES (%s, %s, %s, %s)
+        ''', (data['nombre'], data['email'], data['password'], data['privilegios']))
         
         mysql.connection.commit()
         return jsonify({'message': 'Usuario creado exitosamente'}), 201
@@ -714,7 +715,54 @@ def crear_usuario():
     finally:
         cursor.close()
 
-@app.route('/api/libros/buscar-isbn')
+@app.route('/api/usuarios/<int:id>', methods=['DELETE'])
+def eliminar_usuario(id):
+    if 'loggedin' not in session or session['rol'] != 'admin':
+        return jsonify({'error': 'No autorizado'}), 401
+        
+    # No permitir que un usuario se elimine a sí mismo
+    if session['id'] == id:
+        return jsonify({'error': 'No puede eliminar su propio usuario'}), 400
+        
+    cursor = mysql.connection.cursor()
+    try:
+        # Verificar si el usuario tiene préstamos activos
+        cursor.execute('SELECT COUNT(*) FROM prestamos WHERE usuario_id = %s AND estado = "activo"', (id,))
+        prestamos_activos = cursor.fetchone()[0]
+        if prestamos_activos > 0:
+            return jsonify({
+                'error': 'No se puede eliminar un usuario con préstamos activos. Debe devolver los libros primero.'
+            }), 400
+            
+        # Verificar si es un usuario administrador
+        cursor.execute('SELECT rol FROM usuarios WHERE id = %s', (id,))
+        rol = cursor.fetchone()
+        if not rol:
+            return jsonify({'error': 'Usuario no encontrado'}), 404
+            
+        if rol[0] == 'admin':
+            # Contar cuántos administradores hay
+            cursor.execute('SELECT COUNT(*) FROM usuarios WHERE rol = "admin"')
+            total_admins = cursor.fetchone()[0]
+            
+            if total_admins <= 1:
+                return jsonify({'error': 'No se puede eliminar el último usuario administrador'}), 400
+        
+        # Eliminar solicitudes pendientes del usuario
+        cursor.execute('DELETE FROM solicitudes WHERE usuario_id = %s', (id,))
+        
+        # Eliminar al usuario
+        cursor.execute('DELETE FROM usuarios WHERE id = %s', (id,))
+        
+        mysql.connection.commit()
+        return jsonify({'message': 'Usuario eliminado exitosamente'})
+    except Exception as e:
+        mysql.connection.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        cursor.close()
+
+@app.route("/api/libros/buscar-isbn")
 def buscar_libro_por_isbn():
     isbn = request.args.get('isbn', '')
     if not isbn:

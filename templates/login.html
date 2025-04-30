@@ -12,17 +12,17 @@
 <body class="login-grid">
  <div class="login-content">
   <div class="login-one">
-    <div class="brand brand--login">PLAYBOOKS</div>
+    <a href="/"><div class="brand brand--login">PLAYBOOKS</div></a>
 
    <h1 class="title" style="color: white;">Mi cuenta</h1>
    <form class="form" id="loginForm" method="POST" action="{{ url_for('login') }}" style="margin-bottom: 20px;"> 
     <div class="form__control">
-     <label for="nombre" class="label" style="color: white;">Correo electrónico</label>
-     <input type="email" name="nombre" id="nombre" class="input" placeholder="Ingresa tu correo electrónico" required>
+     <label for="email" class="label" style="color: white;">Correo electrónico</label>
+     <input type="email" name="email" id="email" class="input" placeholder="Ingresa tu correo electrónico" required>
     </div>
     <div class="form__control">
-     <label for="email" class="label" style="color: white;">Contraseña</label>
-     <input type="password" name="email" id="email" class="input" placeholder="Ingresa tu contraseña" required>
+     <label for="contraseña" class="label" style="color: white;">Contraseña</label>
+     <input type="password" name="contraseña" id="contraseña" class="input" placeholder="Ingresa tu contraseña" required>
     </div>
     {% with messages = get_flashed_messages() %}
       {% if messages %}

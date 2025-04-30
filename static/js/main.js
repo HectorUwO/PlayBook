@@ -6,6 +6,17 @@ let paginationState = {
     booksPerPage: 12
 };
 
+// Función para mezclar aleatoriamente un array (algoritmo Fisher-Yates)
+function shuffleArray(array) {
+    // Creamos una copia para no afectar el array original
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
 //Funcion para cargar secciones segundo el rol del usuario
 async function setupUserInterface() {
     const response = await fetch('/get_user_role');
@@ -39,17 +50,68 @@ async function setupUserInterface() {
     return userRole;
 }
 
+// Extract search functionality setup into a separate function
+async function setupSearch() {
+    // Make sure allLibros is loaded
+    if (allLibros.length === 0) {
+        try {
+            const response = await fetch('/api/libros');
+            allLibros = await response.json();
+        } catch (error) {
+            console.error('Error cargando libros para búsqueda:', error);
+            return;
+        }
+    }
+
+    // Manejar búsqueda en desktop
+    const searchInput = document.querySelector('.input--search');
+    if (searchInput) {
+        searchInput.addEventListener('input', e => {
+            const searchTerm = e.target.value.toLowerCase();
+            if (searchTerm === '') {
+                document.querySelector('.search__container').style.display = 'none';
+                return;
+            }
+            buscarLibros(searchTerm, false); // false = desktop search
+        });
+    }
+
+    // Añadir funcionalidad para búsqueda móvil
+    const mobileSearchInput = document.querySelector('.search-mobile__content .input--search');
+    if (mobileSearchInput) {
+        mobileSearchInput.addEventListener('input', e => {
+            const searchTerm = e.target.value.toLowerCase();
+            if (searchTerm === '') {
+                document.querySelector('.search__results').innerHTML = '';
+                return;
+            }
+            buscarLibros(searchTerm, true); // true = mobile search
+        });
+    }
+}
+
 //Función para mostrar las secciones al cargar la página
 if (window.location.pathname === "/") {
     document.addEventListener('DOMContentLoaded', async function() {
-            await setupUserInterface();
+        await setupUserInterface();
         
         // Cargar todos los libros una sola vez
         try {
             const response = await fetch('/api/libros');
             allLibros = await response.json();
-            // Mostrar categoría inicial
-            mostrarLibrosPorCategoria('Literatura y novelas');
+            // Mostrar todos los libros al inicio
+            paginationState.currentCategory = 'Todos';
+            mostrarLibrosPorCategoria('Todos');
+            
+            // Asegurarse de que la pestaña "Todos" está activa al inicio
+            const tabs = document.querySelectorAll('.tabs__link, .tabs__link--isActive');
+            tabs.forEach(tab => {
+                if (tab.dataset.categoria === 'Todos') {
+                    tab.className = 'tabs__link--isActive';
+                } else {
+                    tab.className = 'tabs__link';
+                }
+            });
         } catch (error) {
             console.error('Error cargando libros:', error);
         }
@@ -73,18 +135,14 @@ if (window.location.pathname === "/") {
             });
         });
 
-        // Manejar búsqueda
-        const searchInput = document.querySelector('.input--search');
-        if (searchInput) {
-            searchInput.addEventListener('input', e => {
-                const searchTerm = e.target.value.toLowerCase();
-                if (searchTerm === '') {
-                    document.querySelector('.search__container').style.display = 'none';
-                    return;
-                }
-                buscarLibros(searchTerm);
-            });
-        }
+        // Setup search functionality
+        await setupSearch();
+    });
+} else {
+    // For other pages like libro.html, only set up the search and UI
+    document.addEventListener('DOMContentLoaded', async function() {
+        await setupUserInterface();
+        await setupSearch();
     });
 }
 
@@ -110,7 +168,16 @@ async function getBookCoverUrl(isbn) {
 //Función para mostrar los libros por categoría
 async function mostrarLibrosPorCategoria(categoria) {
     const container = document.querySelector('.container');
-    const librosFiltrados = allLibros.filter(libro => libro.categoria === categoria);
+    
+    // Modificar para mostrar todos los libros cuando la categoría es "Todos"
+    let librosFiltrados;
+    
+    if (categoria === 'Todos') {
+        // Aplicar shuffle solo cuando la categoría es "Todos"
+        librosFiltrados = shuffleArray(allLibros);
+    } else {
+        librosFiltrados = allLibros.filter(libro => libro.categoria === categoria);
+    }
     
     // Calculate pagination
     const { currentPage, booksPerPage } = paginationState;
@@ -203,8 +270,11 @@ async function mostrarLibrosPorCategoria(categoria) {
 }
 
 //Función para buscar libros
-async function buscarLibros(termino) {
-    const contenedorBusqueda = document.querySelector('.search__container');
+async function buscarLibros(termino, isMobile = false) {
+    const contenedorBusqueda = isMobile 
+        ? document.querySelector('.search__results')
+        : document.querySelector('.search__container');
+        
     const librosFiltrados = allLibros.filter(libro => 
         libro.titulo.toLowerCase().includes(termino) ||
         libro.autor.toLowerCase().includes(termino)
@@ -212,6 +282,7 @@ async function buscarLibros(termino) {
 
     if (librosFiltrados.length === 0) {
         contenedorBusqueda.innerHTML = '<p>No se encontraron libros.</p>';
+        contenedorBusqueda.style.display = 'block';
         return;
     }
 
@@ -335,10 +406,33 @@ const btnSearchMobile = document.querySelector('#btn-search-mobile');
 const searchMobileBox = document.querySelector('.search-mobile');
 const btnCloseMobile = document.querySelector('#close-mobile');
 
+if (btnSearchMobile) {
+    btnSearchMobile.addEventListener('click', () => {
+        searchMobileBox.style.display = 'block';
+    });
+}
 
-btnSearchMobile.addEventListener('click', () => {
-    searchMobileBox.style.display = 'block';
-});
-btnCloseMobile.addEventListener('click', () => {
-    searchMobileBox.style.display = 'none';
-});
+if (btnCloseMobile) {
+    btnCloseMobile.addEventListener('click', () => {
+        searchMobileBox.style.display = 'none';
+    });
+}
+
+// Function to update book cover based on ISBN for reuse across the application
+async function updateBookCoverByISBN(isbnField, coverImageElement) {
+    const isbn = isbnField.value.trim();
+    if (isbn) {
+        // Show loading image while fetching the cover
+        coverImageElement.src = '/static/img/loading.gif';
+        
+        try {
+            const coverUrl = await getBookCoverUrl(isbn);
+            coverImageElement.src = coverUrl;
+        } catch (error) {
+            console.error('Error fetching book cover:', error);
+            coverImageElement.src = '/static/covers/no-cover.png';
+        }
+    } else {
+        coverImageElement.src = '/static/covers/no-cover.png';
+    }
+}
