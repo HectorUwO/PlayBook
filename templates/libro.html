@@ -14,7 +14,6 @@
     <meta property="og:type" content="book">
     <meta property="og:image" content="{{ url_for('static', filename='covers/' + (libro.isbn if libro.isbn else 'hero_books.png'), _external=True) }}">
     <meta property="og:url" content="{{ request.url }}">
-    <meta property="og:description" content="{{ libro.descripcion[:150] + '...' if libro.descripcion and len(libro.descripcion) > 150 else libro.descripcion }}">
     <meta property="og:locale" content="es_ES">
     <meta property="og:site_name" content="PlayBooks">
     <meta property="book:author" content="{{ libro.autor }}">
