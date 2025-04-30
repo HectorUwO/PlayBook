@@ -9,6 +9,15 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    
+    <!-- Open Graph Meta Tags en español -->
+    <meta property="og:title" content="Panel de Administración | PlayBooks">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="{{ url_for('static', filename='images/hero_books.png', _external=True) }}">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:description" content="Panel de administración para gestionar libros, préstamos y usuarios de la biblioteca digital PlayBooks.">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:site_name" content="PlayBooks">
 </head>
 <body class="grid">
     <!-- Header - Keeping it intact as requested -->

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +8,17 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    
+    <!-- Open Graph Meta Tags en español -->
+    <meta property="og:title" content="{{ libro.titulo }} | PlayBooks">
+    <meta property="og:type" content="book">
+    <meta property="og:image" content="{{ url_for('static', filename='covers/' + (libro.isbn if libro.isbn else 'hero_books.png'), _external=True) }}">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:description" content="{{ libro.descripcion[:150] + '...' if libro.descripcion and len(libro.descripcion) > 150 else libro.descripcion }}">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:site_name" content="PlayBooks">
+    <meta property="book:author" content="{{ libro.autor }}">
+    <meta property="book:isbn" content="{{ libro.isbn }}">
 </head>
 <body class="grid">
     <div class="grid__item header">
