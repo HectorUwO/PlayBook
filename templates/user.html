@@ -78,12 +78,79 @@
         .user-role.admin {
             background-color: #e74c3c;
         }
+
+        /* Estilos para el modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            max-width: 90%;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            color: #aaa;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .modal-close:hover {
+            color: #555;
+        }
+        
+        .modal-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .btn-danger {
+            background-color: #e74c3c;
+        }
+        
+        .btn-secondary {
+            background-color: #95a5a6;
+        }
     </style>
 </head>
 <body class="grid">
     <div class="grid__item header">
         <div class="navbar__brand">
           <div class="brand"><a href="{{url_for('index')}}">PLAYBOOKS</a></div>
+          <div class="mobile-nav">
+          <a href="#" class="navbar__link has-icon" id="btn-search-mobile">
+            <span class="material-symbols-outlined">search</span>
+          </a>
+          <a href="{{url_for('admin')}}" class="navbar__link has-icon" id="mobile-admin-btn" style="display: none;">
+            <span class="material-symbols-outlined">shield_person</span>
+          </a>
+          <a href="login" class="navbar__link has-icon" id="mobile-login-btn">
+            <span class="material-symbols-outlined">account_circle</span>
+          </a>
+          <a href="logout" class="navbar__link has-icon" id="mobile-logout-btn" style="display: none;">
+            <span class="material-symbols-outlined">logout</span>
+          </a>
+        </div>
         </div>
         <div class="navbar__search">
           <input type="text" class="input input--search" placeholder="Busca un libro de tu interés">
@@ -155,12 +222,25 @@
         </section>
 
         <section class="stats-details">
-            <h2>Mis Libros Prestados</h2>
+            <h2>Mis Solicitudes</h2>
             <div id="misLibros" class="stats-table">
-                <p>Cargando préstamos...</p>
+                <p>Cargando solicitudes...</p>
             </div>
         </section>
     </main>
+
+    <!-- Modal para confirmación de cancelación -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h3>Confirmar Cancelación</h3>
+            <p>¿Estás seguro de que deseas cancelar esta solicitud?</p>
+            <div class="modal-buttons">
+                <button id="confirmCancel" class="btn btn-danger">Confirmar</button>
+                <button id="cancelAction" class="btn btn-secondary">Cancelar</button>
+            </div>
+        </div>
+    </div>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/user.js') }}"></script>

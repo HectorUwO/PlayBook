@@ -173,6 +173,8 @@ def libro(id):
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
+    if request.args.get('redirect'):
+        session['redirect_url'] = request.args.get('redirect')
     if request.method == 'POST':
         email = request.form.get('email', '').strip().lower()
         print(email)
@@ -193,6 +195,10 @@ def login():
             session['email'] = user[1]
             session['nombre'] = user[2]
             session['rol'] = user[3] 
+            if 'redirect_url' in session:
+                redirect_url = session.pop('redirect_url')  # Get and remove from session
+                return redirect(redirect_url)
+                
             return redirect(url_for('index'))
         else:
             flash('Contraseña o email incorrectos')
@@ -290,14 +296,14 @@ def mis_solicitudes():
     cursor = mysql.connection.cursor()
     try:
         cursor.execute('''
-            SELECT s.id, l.titulo, s.estado, s.fecha_solicitud, s.libro_id
+            SELECT s.id, l.titulo, s.estado, s.fecha_solicitud, s.libro_id, s.comentarios
             FROM solicitudes s 
             JOIN libros l ON s.libro_id = l.id 
             WHERE s.usuario_id = %s
             ORDER BY s.fecha_solicitud DESC
         ''', (session['id'],))
         
-        columns = ['id', 'titulo', 'estado', 'fecha_solicitud', 'libro_id']
+        columns = ['id', 'titulo', 'estado', 'fecha_solicitud', 'libro_id', 'comentarios']
         solicitudes = [dict(zip(columns, row)) for row in cursor.fetchall()]
         return jsonify(solicitudes)
     finally:
@@ -441,9 +447,14 @@ def gestionar_solicitud(id):
         if estado_solicitud != 'pendiente':
             return jsonify({'error': 'Esta solicitud ya fue procesada'}), 400
 
-        # Actualizar estado de la solicitud
-        cursor.execute('UPDATE solicitudes SET estado = %s WHERE id = %s', 
-                      (data['estado'], id))
+        # Si está denegando con comentarios, guardarlos
+        if data['estado'] == 'denegada' and 'comentarios' in data:
+            cursor.execute('UPDATE solicitudes SET estado = %s, comentarios = %s WHERE id = %s', 
+                          (data['estado'], data['comentarios'], id))
+        else:
+            # Actualizar estado de la solicitud sin comentarios
+            cursor.execute('UPDATE solicitudes SET estado = %s WHERE id = %s', 
+                          (data['estado'], id))
 
         if data['estado'] == 'aprobada':
             # Crear el préstamo (el stock ya fue reducido en la solicitud)
@@ -855,6 +866,105 @@ def generate_description():
     except Exception as e:
         app.logger.error(f"General error in generate_description: {str(e)}")
         return jsonify({'error': 'Error del servidor', 'message': str(e)}), 500
+
+@app.route('/api/solicitudes/<int:id>/cancelar', methods=['PUT'])
+def cancelar_solicitud(id):
+    if 'loggedin' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+        
+    cursor = mysql.connection.cursor()
+    try:
+        # Verificar si la solicitud existe y pertenece al usuario actual
+        cursor.execute('''
+            SELECT s.id, s.libro_id, s.estado, l.stock
+            FROM solicitudes s
+            JOIN libros l ON s.libro_id = l.id
+            WHERE s.id = %s AND s.usuario_id = %s
+        ''', (id, session['id']))
+        
+        result = cursor.fetchone()
+        if not result:
+            return jsonify({'error': 'Solicitud no encontrada o no autorizada'}), 404
+            
+        solicitud_id, libro_id, estado, stock_actual = result
+        
+        if estado != 'pendiente':
+            return jsonify({'error': 'Solo se pueden cancelar solicitudes pendientes'}), 400
+        
+        # Actualizar estado de la solicitud a "cancelada"
+        cursor.execute('UPDATE solicitudes SET estado = "cancelada" WHERE id = %s', (id,))
+        
+        # Incrementar el stock del libro y actualizar estado si es necesario
+        cursor.execute('''
+            UPDATE libros 
+            SET stock = stock + 1,
+                estado = CASE WHEN (stock + 1) <= 0 THEN 'agotado' ELSE 'disponible' END
+            WHERE id = %s
+        ''', (libro_id,))
+        
+        mysql.connection.commit()
+        return jsonify({'message': 'Solicitud cancelada exitosamente'})
+        
+    except Exception as e:
+        mysql.connection.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        cursor.close()
+
+@app.route("/register", methods=['POST'])
+def register():
+    if request.method == 'POST':
+        nombre = request.form.get('nombre', '').strip()
+        email = request.form.get('email', '').strip().lower()
+        password = request.form.get('password', '').strip()
+        confirm_password = request.form.get('confirm_password', '').strip()
+        
+        # Validaciones
+        if not all([nombre, email, password, confirm_password]):
+            flash('Por favor complete todos los campos')
+            return redirect(url_for('login'))
+            
+        if password != confirm_password:
+            flash('Las contraseñas no coinciden')
+            return redirect(url_for('login'))
+            
+        cursor = mysql.connection.cursor()
+        try:
+            # Verificar si el email ya existe
+            cursor.execute('SELECT id FROM usuarios WHERE email = %s', (email,))
+            if cursor.fetchone():
+                flash('Este correo electrónico ya está registrado')
+                return redirect(url_for('login'))
+                
+            # Insertar nuevo usuario (rol por defecto: usuario)
+            cursor.execute('''
+                INSERT INTO usuarios (nombre, email, contraseña, rol)
+                VALUES (%s, %s, %s, 'usuario')
+            ''', (nombre, email, password))
+            
+            mysql.connection.commit()
+            
+            # Iniciar sesión automáticamente
+            cursor.execute('SELECT id, email, nombre FROM usuarios WHERE email = %s', (email,))
+            user = cursor.fetchone()
+            
+            session['loggedin'] = True
+            session['id'] = user[0]
+            session['email'] = user[1]
+            session['nombre'] = user[2]
+            session['rol'] = 'usuario'
+            
+            flash('¡Registro exitoso!')
+            return redirect(url_for('index'))
+            
+        except Exception as e:
+            mysql.connection.rollback()
+            flash(f'Error al registrar: {str(e)}')
+            return redirect(url_for('login'))
+        finally:
+            cursor.close()
+            
+    return redirect(url_for('login'))
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=80, debug=True)

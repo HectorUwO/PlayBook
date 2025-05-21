@@ -6,6 +6,15 @@ let paginationState = {
     booksPerPage: 12
 };
 
+// Add search pagination state
+let searchPaginationState = {
+    currentPage: 1,
+    resultsPerPage: 5,
+    currentSearchTerm: '',
+    totalResults: [],
+    isMobileSearch: false
+};
+
 // Función para mezclar aleatoriamente un array (algoritmo Fisher-Yates)
 function shuffleArray(array) {
     // Creamos una copia para no afectar el array original
@@ -24,6 +33,8 @@ async function setupUserInterface() {
     const userRole = data.rol;
 
     const adminSection = document.getElementById('adminSection');
+    const mobileAdminSection = document.getElementById('mobile-admin-btn');
+    const mobilecloseSession = document.getElementById('mobile-logout-btn');
     const userSection = document.getElementById('userSection');
     const loginSection = document.getElementById('loginSection');
     const closeSession = document.getElementById('closeSession');
@@ -33,13 +44,16 @@ async function setupUserInterface() {
         document.querySelector('.navbar__nav').style.gridColumn = '6/6';
         adminSection.style.display = 'block';
         userSection.style.display = 'block';
+        mobileAdminSection.style.display = 'block';
         loginSection.style.display = 'none';
         closeSession.style.display = 'block'; // Mostrar cerrar sesión
+        mobilecloseSession.style.display = 'block'; // Mostrar cerrar sesión
     } else if (userRole === 'usuario') {
         adminSection.style.display = 'none';
         userSection.style.display = 'block';
         loginSection.style.display = 'none';
         closeSession.style.display = 'block'; // Mostrar cerrar sesión
+        mobilecloseSession.style.display = 'block'; // Mostrar cerrar sesión
     } else {
         adminSection.style.display = 'none';
         userSection.style.display = 'none';
@@ -49,6 +63,9 @@ async function setupUserInterface() {
 
     return userRole;
 }
+
+// Add this variable for debouncing the search
+let searchDebounceTimer;
 
 // Extract search functionality setup into a separate function
 async function setupSearch() {
@@ -72,7 +89,12 @@ async function setupSearch() {
                 document.querySelector('.search__container').style.display = 'none';
                 return;
             }
-            buscarLibros(searchTerm, false); // false = desktop search
+            
+            // Add debouncing - only search after user stops typing for 300ms
+            clearTimeout(searchDebounceTimer);
+            searchDebounceTimer = setTimeout(() => {
+                buscarLibros(searchTerm, false); // false = desktop search
+            }, 300);
         });
     }
 
@@ -85,7 +107,12 @@ async function setupSearch() {
                 document.querySelector('.search__results').innerHTML = '';
                 return;
             }
-            buscarLibros(searchTerm, true); // true = mobile search
+            
+            // Add debouncing for mobile search too
+            clearTimeout(searchDebounceTimer);
+            searchDebounceTimer = setTimeout(() => {
+                buscarLibros(searchTerm, true); // true = mobile search
+            }, 300);
         });
     }
 }
@@ -269,18 +296,106 @@ async function mostrarLibrosPorCategoria(categoria) {
     });
 }
 
+// Helper function to remove accents for better searching
+function removeAccents(str) {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+// Function to calculate match relevance score
+function calculateRelevance(libro, terminos) {
+    let score = 0;
+    const fields = {
+        titulo: 10,      // Title matches are most important
+        autor: 8,        // Author matches are next
+        isbn: 6,         // ISBN matches are specific but less common
+        categoria: 5,    // Category is useful but broad
+        descripcion: 3,  // Description match is relevant but less specific
+        anio: 2          // Year is least specific for searching
+    };
+    
+    // Normalized fields for accent-insensitive searching
+    const normalizedFields = {};
+    Object.keys(fields).forEach(field => {
+        if (libro[field]) {
+            normalizedFields[field] = removeAccents(libro[field].toString().toLowerCase());
+        }
+    });
+    
+    terminos.forEach(termino => {
+        // Skip very short terms (like single letters) to reduce noise
+        if (termino.length < 2) return;
+        
+        const normalizedTermino = removeAccents(termino);
+        
+        Object.keys(normalizedFields).forEach(field => {
+            const value = normalizedFields[field];
+            
+            // Exact match (weighted by field importance)
+            if (value === normalizedTermino) {
+                score += fields[field] * 3;
+            }
+            // Field starts with the term (weighted by field importance)
+            else if (value.startsWith(normalizedTermino)) {
+                score += fields[field] * 2;
+            }
+            // Field contains the term somewhere (weighted by field importance)
+            else if (value.includes(normalizedTermino)) {
+                score += fields[field];
+            }
+            // Check for word boundaries - term appears as a complete word
+            else if (new RegExp(`\\b${normalizedTermino}\\b`).test(value)) {
+                score += fields[field] * 1.5;
+            }
+        });
+    });
+    
+    return score;
+}
+
 //Función para buscar libros
 async function buscarLibros(termino, isMobile = false) {
     const contenedorBusqueda = isMobile 
         ? document.querySelector('.search__results')
         : document.querySelector('.search__container');
-        
-    const librosFiltrados = allLibros.filter(libro => 
-        libro.titulo.toLowerCase().includes(termino) ||
-        libro.autor.toLowerCase().includes(termino)
-    );
+    
+    // Split search term into words for better matching
+    const searchTerms = removeAccents(termino.toLowerCase()).split(/\s+/).filter(term => term.length > 0);
+    
+    if (searchTerms.length === 0) {
+        contenedorBusqueda.style.display = 'none';
+        return;
+    }
 
-    if (librosFiltrados.length === 0) {
+    // Reset pagination to page 1 if this is a new search term
+    if (termino !== searchPaginationState.currentSearchTerm) {
+        searchPaginationState.currentPage = 1;
+        searchPaginationState.currentSearchTerm = termino;
+        searchPaginationState.isMobileSearch = isMobile;
+        
+        // Calculate relevance score for each book
+        searchPaginationState.totalResults = allLibros
+            .map(libro => {
+                const score = calculateRelevance(libro, searchTerms);
+                return { ...libro, score };
+            })
+            .filter(libro => libro.score > 0) // Only include books with some relevance
+            .sort((a, b) => b.score - a.score); // Sort by relevance score (highest first)
+    } else if (isMobile !== searchPaginationState.isMobileSearch) {
+        // If switching between mobile and desktop but with same search term,
+        // keep results but reset page
+        searchPaginationState.currentPage = 1;
+        searchPaginationState.isMobileSearch = isMobile;
+    }
+    
+    const { currentPage, resultsPerPage, totalResults } = searchPaginationState;
+    const startIndex = (currentPage - 1) * resultsPerPage;
+    const endIndex = startIndex + resultsPerPage;
+    
+    // Get current page results
+    const librosFiltrados = totalResults.slice(startIndex, endIndex);
+    const totalPages = Math.ceil(totalResults.length / resultsPerPage);
+
+    if (totalResults.length === 0) {
         contenedorBusqueda.innerHTML = '<p>No se encontraron libros.</p>';
         contenedorBusqueda.style.display = 'block';
         return;
@@ -295,8 +410,7 @@ async function buscarLibros(termino, isMobile = false) {
         };
     }));
 
-    contenedorBusqueda.style.display = 'block';
-    contenedorBusqueda.innerHTML = librosConPortadas.map(libro => `
+    let resultsHTML = librosConPortadas.map(libro => `
         <a href="/libro/${libro.id}" class="a-search">
             <div class="search__card">
                 <div class="search__image">
@@ -315,6 +429,73 @@ async function buscarLibros(termino, isMobile = false) {
             </div>
         </a>
     `).join('');
+    
+    // Add pagination if needed
+    if (totalPages > 1) {
+        resultsHTML += '<div class="search__pagination">';
+        
+        // Previous button
+        resultsHTML += `
+            <button class="search__pagination-btn ${currentPage === 1 ? 'search__pagination-btn--disabled' : ''}" 
+                    ${currentPage === 1 ? 'disabled' : ''} 
+                    data-page="prev">
+                <span class="material-symbols-outlined">chevron_left</span>
+            </button>
+        `;
+        
+        // Page numbers - show max 3 pages with current in middle when possible
+        const maxPagesToShow = 3;
+        let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+        let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+        
+        // Adjust start page if we're near the end
+        if (endPage - startPage + 1 < maxPagesToShow) {
+            startPage = Math.max(1, endPage - maxPagesToShow + 1);
+        }
+        
+        for (let i = startPage; i <= endPage; i++) {
+            resultsHTML += `
+                <button class="search__pagination-btn ${i === currentPage ? 'search__pagination-btn--active' : ''}" 
+                        data-page="${i}">
+                    ${i}
+                </button>
+            `;
+        }
+        
+        // Next button
+        resultsHTML += `
+            <button class="search__pagination-btn ${currentPage === totalPages ? 'search__pagination-btn--disabled' : ''}" 
+                    ${currentPage === totalPages ? 'disabled' : ''} 
+                    data-page="next">
+                <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+        `;
+        
+        resultsHTML += '</div>';
+    }
+    
+    // Update container content
+    contenedorBusqueda.style.display = 'block';
+    contenedorBusqueda.innerHTML = resultsHTML;
+
+    // Add event listeners to pagination buttons
+    const paginationButtons = contenedorBusqueda.querySelectorAll('.search__pagination-btn');
+    paginationButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const page = this.dataset.page;
+            
+            if (page === 'prev' && currentPage > 1) {
+                searchPaginationState.currentPage--;
+            } else if (page === 'next' && currentPage < totalPages) {
+                searchPaginationState.currentPage++;
+            } else if (page !== 'prev' && page !== 'next') {
+                searchPaginationState.currentPage = parseInt(page);
+            }
+            
+            // Re-run search with same term to update display with new page
+            buscarLibros(termino, isMobile);
+        });
+    });
 
     // Cargar las imágenes después de crear los elementos
     const imgElements = contenedorBusqueda.querySelectorAll('.search--img');

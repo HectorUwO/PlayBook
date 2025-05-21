@@ -31,12 +31,15 @@ html {
  color: var(--text-color);
  background-color: var(--background-light);
  scroll-behavior: smooth;
+ min-width: 320px; /* Prevents layout from becoming too small */
 }
 
 body {
  margin: 0;
  padding: 0;
  line-height: 1.5;
+ min-width: 320px; /* Ensures a minimum width across all elements */
+ overflow-x: auto; /* Allows horizontal scrolling if content is wider than viewport */
 }
 
 .grid {
@@ -47,6 +50,7 @@ body {
  grid-template-columns: 1fr;
  grid-template-rows: auto auto 1fr;
  gap: 30px;
+ min-width: 320px; /* Minimum width for the main grid */
 }
 
 .header {

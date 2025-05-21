@@ -8,6 +8,30 @@
  <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+ <style>
+   .tabs {
+     display: flex;
+     margin-bottom: 20px;
+   }
+   .tab {
+     flex: 1;
+     text-align: center;
+     padding: 10px;
+     cursor: pointer;
+     color: white;
+     border-bottom: 2px solid transparent;
+   }
+   .tab.active {
+     border-bottom: 2px solid white;
+     font-weight: bold;
+   }
+   .tab-content {
+     display: none;
+   }
+   .tab-content.active {
+     display: block;
+   }
+ </style>
 </head>
 <body class="login-grid">
  <div class="login-content">
@@ -15,7 +39,14 @@
     <a href="/"><div class="brand brand--login">PLAYBOOKS</div></a>
 
    <h1 class="title" style="color: white;">Mi cuenta</h1>
-   <form class="form" id="loginForm" method="POST" action="{{ url_for('login') }}" style="margin-bottom: 20px;"> 
+   
+   <div class="tabs">
+     <div id="loginTab" class="tab active">Iniciar sesión</div>
+     <div id="registerTab" class="tab">Registrarse</div>
+   </div>
+   
+   <!-- Login Form -->
+   <form class="form tab-content active" id="loginForm" method="POST" action="{{ url_for('login') }}" style="margin-bottom: 20px;"> 
     <div class="form__control">
      <label for="email" class="label" style="color: white;">Correo electrónico</label>
      <input type="email" name="email" id="email" class="input" placeholder="Ingresa tu correo electrónico" required>
@@ -33,7 +64,29 @@
     {% endwith %}
     <button type="submit" class="btn btn--primary btn--large">Entrar a mi cuenta</button>
    </form>
-      <a href="/" style="color: white;">Volver al inicio</a>
+   
+   <!-- Register Form -->
+   <form class="form tab-content" id="registerForm" method="POST" action="{{ url_for('register') }}" style="margin-bottom: 20px;">
+    <div class="form__control">
+     <label for="reg_nombre" class="label" style="color: white;">Nombre completo</label>
+     <input type="text" name="nombre" id="reg_nombre" class="input" placeholder="Ingresa tu nombre completo" required>
+    </div>
+    <div class="form__control">
+     <label for="reg_email" class="label" style="color: white;">Correo electrónico</label>
+     <input type="email" name="email" id="reg_email" class="input" placeholder="Ingresa tu correo electrónico" required>
+    </div>
+    <div class="form__control">
+     <label for="reg_password" class="label" style="color: white;">Contraseña</label>
+     <input type="password" name="password" id="reg_password" class="input" placeholder="Ingresa una contraseña" required>
+    </div>
+    <div class="form__control">
+     <label for="reg_confirm_password" class="label" style="color: white;">Confirmar contraseña</label>
+     <input type="password" name="confirm_password" id="reg_confirm_password" class="input" placeholder="Confirma tu contraseña" required>
+    </div>
+    <button type="submit" class="btn btn--primary btn--large">Crear cuenta</button>
+   </form>
+   
+   <a href="/" style="color: white;">Volver al inicio</a>
   </div>
   <div class="login-two">
    <h2 class="title">¿Por qué debo tener una cuenta?</h2>
@@ -59,5 +112,33 @@
    </div>
   </div>
  </div>
+
+ <script>
+   // Tab switching functionality
+   document.getElementById('loginTab').addEventListener('click', function() {
+     document.getElementById('loginTab').classList.add('active');
+     document.getElementById('registerTab').classList.remove('active');
+     document.getElementById('loginForm').classList.add('active');
+     document.getElementById('registerForm').classList.remove('active');
+   });
+   
+   document.getElementById('registerTab').addEventListener('click', function() {
+     document.getElementById('registerTab').classList.add('active');
+     document.getElementById('loginTab').classList.remove('active');
+     document.getElementById('registerForm').classList.add('active');
+     document.getElementById('loginForm').classList.remove('active');
+   });
+   
+   // Password confirmation validation
+   document.getElementById('registerForm').addEventListener('submit', function(e) {
+     const password = document.getElementById('reg_password').value;
+     const confirmPassword = document.getElementById('reg_confirm_password').value;
+     
+     if (password !== confirmPassword) {
+       e.preventDefault();
+       alert('Las contraseñas no coinciden');
+     }
+   });
+ </script>
 </body>
 </html>

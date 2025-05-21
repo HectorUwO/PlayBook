@@ -619,15 +619,55 @@ document.addEventListener('DOMContentLoaded', async function() {
             }
         });
         
-        // Close modals when clicking outside
-        window.addEventListener('click', function(e) {
-            if (e.target === deleteBookModal) {
-                deleteBookModal.style.display = 'none';
+        // Rejection reason modal controls - improved with error handling
+        const rejectionModal = document.getElementById('rejectionReasonModal');
+        if (rejectionModal) {
+            const rejectionModalClose = rejectionModal.querySelector('.modal-close');
+            const cancelRejection = document.getElementById('cancelRejection');
+            const confirmRejection = document.getElementById('confirmRejection');
+            
+            if (rejectionModalClose) {
+                rejectionModalClose.addEventListener('click', function() {
+                    rejectionModal.style.display = 'none';
+                });
             }
-            if (e.target === deleteUserModal) {
-                deleteUserModal.style.display = 'none';
+            
+            if (cancelRejection) {
+                cancelRejection.addEventListener('click', function() {
+                    rejectionModal.style.display = 'none';
+                });
             }
-        });
+            
+            if (confirmRejection) {
+                confirmRejection.addEventListener('click', async function() {
+                    const solicitudId = this.getAttribute('data-id');
+                    const comentarios = document.getElementById('rejectionReason').value.trim();
+                    
+                    if (!comentarios) {
+                        showToast('Por favor ingrese un motivo para el rechazo', 'warning');
+                        return;
+                    }
+                    
+                    rejectionModal.style.display = 'none';
+                    await procesarRechazoSolicitud(solicitudId, comentarios);
+                });
+            }
+            
+            // Close rejection modal when clicking outside
+            window.addEventListener('click', function(e) {
+                if (e.target === rejectionModal) {
+                    rejectionModal.style.display = 'none';
+                }
+                if (e.target === deleteBookModal) {
+                    deleteBookModal.style.display = 'none';
+                }
+                if (e.target === deleteUserModal) {
+                    deleteUserModal.style.display = 'none';
+                }
+            });
+        } else {
+            console.error('Error: Rejection modal element not found');
+        }
     };
 
     // Call this at the end of DOMContentLoaded
@@ -989,6 +1029,32 @@ async function cargarSolicitudesPendientes() {
 
 async function gestionarSolicitud(id, estado) {
     try {
+        if (estado === 'denegada') {
+            // Show the rejection reason modal
+            const modal = document.getElementById('rejectionReasonModal');
+            if (!modal) {
+                console.error('Error: Rejection modal not found');
+                showToast('Error al mostrar el formulario de rechazo', 'error');
+                return;
+            }
+            
+            const reasonField = document.getElementById('rejectionReason');
+            const confirmButton = document.getElementById('confirmRejection');
+            
+            if (reasonField) reasonField.value = ''; // Clear previous input
+            if (confirmButton) confirmButton.setAttribute('data-id', id);
+            
+            modal.style.display = 'block';
+            
+            // Focus on the textarea to prompt user input
+            if (reasonField) {
+                setTimeout(() => reasonField.focus(), 100);
+            }
+            
+            return; // Stop here and wait for modal interaction
+        }
+        
+        // For approval, continue with the original flow
         const response = await fetch(`/api/solicitudes/${id}`, {
             method: 'PUT',
             headers: {
@@ -1010,6 +1076,37 @@ async function gestionarSolicitud(id, estado) {
         showToast('Error al conectar con el servidor', 'error');
     }
     cargarPrestamosActivos();
+}
+
+// Make sure procesarRechazoSolicitud is properly defined
+async function procesarRechazoSolicitud(id, comentarios) {
+    try {
+        console.log(`Rechazando solicitud ${id} con comentarios: ${comentarios}`);
+        
+        const response = await fetch(`/api/solicitudes/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                estado: 'denegada',
+                comentarios: comentarios
+            })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            showToast('Solicitud rechazada exitosamente', 'success');
+            await cargarSolicitudesPendientes();
+            await actualizarEstadisticas();
+        } else {
+            showToast(data.error || 'Error al rechazar la solicitud', 'error');
+        }
+    } catch (error) {
+        console.error('Error al procesar rechazo:', error);
+        showToast('Error al conectar con el servidor', 'error');
+    }
+    await cargarPrestamosActivos();
 }
 
 // Función para actualizar estadísticas

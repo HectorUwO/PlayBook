@@ -72,6 +72,24 @@
                     </a>
                 </li>
                 <li class="sidebar__item">
+                    <a href="#solicitudes" class="sidebar__link" data-panel="solicitudes">
+                        <span class="material-symbols-outlined sidebar__icon">pending_actions</span>
+                        Solicitudes
+                    </a>
+                </li>
+                <li class="sidebar__item">
+                    <a href="#devoluciones" class="sidebar__link" data-panel="devoluciones">
+                        <span class="material-symbols-outlined sidebar__icon">assignment_return</span>
+                        Devoluciones
+                    </a>
+                </li>
+                <li class="sidebar__item">
+                    <a href="#prestamos" class="sidebar__link" data-panel="prestamos">
+                        <span class="material-symbols-outlined sidebar__icon">book</span>
+                        Préstamos
+                    </a>
+                </li>
+                <li class="sidebar__item">
                     <a href="#agregar" class="sidebar__link" data-panel="agregar">
                         <span class="material-symbols-outlined sidebar__icon">add_circle</span>
                         Agregar Libro
@@ -84,27 +102,9 @@
                     </a>
                 </li>
                 <li class="sidebar__item">
-                    <a href="#prestamos" class="sidebar__link" data-panel="prestamos">
-                        <span class="material-symbols-outlined sidebar__icon">book</span>
-                        Préstamos
-                    </a>
-                </li>
-                <li class="sidebar__item">
-                    <a href="#devoluciones" class="sidebar__link" data-panel="devoluciones">
-                        <span class="material-symbols-outlined sidebar__icon">assignment_return</span>
-                        Devoluciones
-                    </a>
-                </li>
-                <li class="sidebar__item">
                     <a href="#usuarios" class="sidebar__link" data-panel="usuarios">
                         <span class="material-symbols-outlined sidebar__icon">people</span>
                         Usuarios
-                    </a>
-                </li>
-                <li class="sidebar__item">
-                    <a href="#solicitudes" class="sidebar__link" data-panel="solicitudes">
-                        <span class="material-symbols-outlined sidebar__icon">pending_actions</span>
-                        Solicitudes
                     </a>
                 </li>
                 <li class="sidebar__item">
@@ -630,9 +630,6 @@
         </div>
     </div>
     
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
-    
     <!-- ISBN Duplicate Book Modal -->
     <div id="isbnDuplicateModal" class="confirmation-modal">
         <div class="confirmation-modal__content">
@@ -660,5 +657,30 @@
             </div>
         </div>
     </div>
+
+    <!-- Rejection reason modal - improved styling and structure -->
+    <div id="rejectionReasonModal" class="confirmation-modal">
+        <div class="confirmation-modal__content">
+            <span class="modal-close">&times;</span>
+            <div class="confirmation-modal__icon">
+                <span class="material-symbols-outlined">help</span>
+            </div>
+            <h2 class="confirmation-modal__title">Motivo de Rechazo</h2>
+            <p class="confirmation-modal__message">Por favor, ingrese el motivo por el cual se rechaza esta solicitud:</p>
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <textarea id="rejectionReason" rows="4" class="form-control" 
+                    placeholder="Escriba el motivo del rechazo aquí..." style="width: 100%; padding: 10px;"></textarea>
+            </div>
+            
+            <div class="confirmation-modal__buttons">
+                <button id="cancelRejection" class="btn">Cancelar</button>
+                <button id="confirmRejection" class="btn btn-danger" data-id="">Confirmar Rechazo</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
 </body>
 </html>

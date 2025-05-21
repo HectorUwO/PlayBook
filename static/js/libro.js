@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (user === 'invitado') { 
         btnPedir.style.backgroundColor = 'rgba(255, 0, 0, 0.493)';
         btnPedir.textContent = 'Inicia sesión para solicitar un prestamo';
-        btnPedir.href = '/login';
+        btnPedir.href = `/login?redirect=/libro/${bookId}`;
         btnPedir.style.display = 'block';
     } else {
         switch (libro.estado) {

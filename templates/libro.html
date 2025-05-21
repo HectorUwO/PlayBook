@@ -24,10 +24,19 @@
         <div class="navbar__brand">
           <div class="brand"><a href="{{url_for('index')}}">PLAYBOOKS</a></div>
           <div class="mobile-nav">
-            <a href="#" class="navbar__link has-icon" id="btn-search-mobile">
-              <span class="material-symbols-outlined">search</span>
-            </a>
-          </div>
+          <a href="#" class="navbar__link has-icon" id="btn-search-mobile">
+            <span class="material-symbols-outlined">search</span>
+          </a>
+          <a href="{{url_for('admin')}}" class="navbar__link has-icon" id="mobile-admin-btn" style="display: none;">
+            <span class="material-symbols-outlined">shield_person</span>
+          </a>
+          <a href="login" class="navbar__link has-icon" id="mobile-login-btn">
+            <span class="material-symbols-outlined">account_circle</span>
+          </a>
+          <a href="logout" class="navbar__link has-icon" id="mobile-logout-btn" style="display: none;">
+            <span class="material-symbols-outlined">logout</span>
+          </a>
+        </div>
         </div>
         <div class="navbar__search">
             <input type="text" class="input input--search" placeholder="Busca un libro de tu interés">
