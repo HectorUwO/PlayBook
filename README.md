@@ -96,10 +96,6 @@ PlayBook/
 │   └── admin.html        # Panel de administración
 │
 ├── app.py                # Aplicación principal Flask
-├── models.py             # Modelos de datos
-├── routes.py             # Rutas y controladores
-├── helpers.py            # Funciones auxiliares
-├── config.py             # Configuración de la aplicación
 ├── requirements.txt      # Dependencias del proyecto
 └── README.md             # Este archivo
 ```
