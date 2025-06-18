@@ -17,7 +17,7 @@
 
 - **Frontend:** HTML5, CSS3, JavaScript (Vanilla)
 - **Backend:** Flask (Python)
-- **Base de datos:** SQLite
+- **Base de datos:** mySQL
 - **Iconografía:** Material Design Icons
 - **Diseño:** Responsive design con CSS Grid y Flexbox
 
