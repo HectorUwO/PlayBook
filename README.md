@@ -2,7 +2,7 @@
 
 > Una moderna aplicación web de gestión de biblioteca que permite a los usuarios explorar, solicitar y disfrutar de una amplia colección de libros.
 
-![PlayBooks Banner](static/images/hero_books.png)
+![PlayBooks Banner](static/images/hero_books.png) aa
 
 ## ✨ Características Principales
 
